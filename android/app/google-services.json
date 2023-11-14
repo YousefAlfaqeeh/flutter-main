@@ -1,0 +1,69 @@
+{
+  "project_info": {
+    "project_number": "889780824569",
+    "firebase_url": "https://trackware-sms-default-rtdb.firebaseio.com",
+    "project_id": "trackware-sms",
+    "storage_bucket": "trackware-sms.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:889780824569:android:1dba3ac4d13c7c27a47528",
+        "android_client_info": {
+          "package_name": "trackware.schoolbustracker.driver"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "889780824569-46jr3uronqv9ijs3ege41ee41a1opbff.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAioXmXtdm0-5c5TruEgczV1B5uT43iZZA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "889780824569-46jr3uronqv9ijs3ege41ee41a1opbff.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:889780824569:android:9df33727f007d8ffa47528",
+        "android_client_info": {
+          "package_name": "trackware.schoolparenttrackware.parent"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "889780824569-46jr3uronqv9ijs3ege41ee41a1opbff.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAioXmXtdm0-5c5TruEgczV1B5uT43iZZA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "889780824569-46jr3uronqv9ijs3ege41ee41a1opbff.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
