@@ -533,7 +533,6 @@ print(onError);
 
   }
 
-
   Widget list_item(int ind){
     // if ( widget.type !='day'){
     //
