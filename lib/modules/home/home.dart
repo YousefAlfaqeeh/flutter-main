@@ -350,7 +350,7 @@ listFeatures1=[];
     return InkWell(
 
       onTap: () {
-        print('-------------------------------------------------1111');
+        // print('-------------------------------------------------1111');
 
         listFeatures1.clear();
 
@@ -369,15 +369,19 @@ listFeatures1=[];
 
         if(listDetail1.dropOffByParent==true)
         {
-          print("dddddddd");
+          // print("dddddddd");
             listFeatures1.add( Features(name: AppLocalizations.of(context).translate('pick_up'), icon: 'https://www.realmadrid.com/StaticFiles/RealMadridResponsive/images/static/og-image.png',nameAr: AppLocalizations.of(context).translate('pick_up')));
 
         }
         listFeatures1.add( Features(name: AppLocalizations.of(context).translate('feedback'), icon: 'https://www.realmadrid.com/StaticFiles/RealMadridResponsive/images/static/og-image.png',nameAr: AppLocalizations.of(context).translate('feedback')));
-        listDetail1.features!.forEach((element) {print('-------');print(element.name);listFeatures1.add(element); });
-        print('-------------------------------------------------');
+        // listDetail1.features!.forEach((element) {
+        //   print('-------');
+        //   print(element.name);listFeatures1.add(element);
+        //
+        // });
+        // print('-------------------------------------------------');
         AppCubit.get(context).setDetalil(listDetail1.name, listDetail1.studentGrade??"", listDetail1.schoolName, listDetail1.avatar, listDetail1.id.toString(),  listDetail1.schoolLat, listDetail1.schoolId.toString(), listDetail1.schoolLng, listDetail1.pickupRequestDistance.toString(), listFeatures1);
-        print(AppCubit.std);
+        // print(AppCubit.std);
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => Detail()),

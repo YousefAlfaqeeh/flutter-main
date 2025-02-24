@@ -7,7 +7,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:sizer/sizer.dart';
 import 'package:udemy_flutter/localizations.dart';
-import 'package:udemy_flutter/models/kidsList.dart';
 import 'package:udemy_flutter/models/method.dart';
 import 'package:udemy_flutter/models/timeTable.dart';
 import 'package:udemy_flutter/modules/cubit/cubit.dart';
@@ -16,6 +15,7 @@ import 'package:udemy_flutter/modules/home/new_home.dart';
 import 'package:udemy_flutter/modules/studet_details/new_detail.dart';
 import 'package:udemy_flutter/shared/components/customWidget.dart';
 import 'package:udemy_flutter/shared/local/cache_helper.dart';
+import 'package:udemy_flutter/shared/shareWid.dart';
 
 
 class Time_Table_Form extends StatefulWidget {
@@ -71,14 +71,17 @@ class _Time_Table_FormState extends State<Time_Table_Form>
     for (int i = 0; i < AppCubit.list_st.length; i++) {
       //
       setState(() {
-        student.add(student_list(i, AppCubit.list_st[i]));
+        MaterialPageRoute navigator=  MaterialPageRoute(
+          builder: (context) =>Time_Table_Form(std_id: AppCubit.std),
+        );
+        student.add(student_list(i,  AppCubit.list_st[i],widget.std_id , navigator,context));
+
+
       });
     }
     setState(() {
       day_name = AppCubit.day_name;
       day_num = AppCubit.day_num;
-      // AppCubit. day_name=day_name;
-      // AppCubit.day_num=day_num;
     });
     return BlocProvider(
       create: (context) => AppCubit()
@@ -333,12 +336,12 @@ class _Time_Table_FormState extends State<Time_Table_Form>
                                           ?
                                       day_name.length>0?
                                       ListView.builder(
-                                        physics: NeverScrollableScrollPhysics(),
+                                        // physics: NeverScrollableScrollPhysics(),
                                         itemBuilder: (context,
                                             index) =>
-                                            allWeekly(
+                                        AppCubit.list_tableTime.length>index?  allWeekly(
                                                 index,
-                                                day_name[0]),
+                                                day_name[0]):SizedBox(height: 40.h),
                                         itemCount: AppCubit
                                             .list_tableTime.length+1,
                                         shrinkWrap: true,
@@ -362,83 +365,11 @@ class _Time_Table_FormState extends State<Time_Table_Form>
     );
   }
 
-  Widget student_list(int ind, Students listDetail1) {
-    List<Features> listFeatures1 = [];
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
-      child: InkWell(
-        onTap: () {
-          AppCubit.stutes_notif_odoo = '';
-          AppCubit.school_image = listDetail1.schoolImage.toString();
-          listFeatures1.clear();
-          // if(listDetail1.changeLocation=true)
-          // {
-          //
-          //   listFeatures1.add( Features(name:  AppLocalizations.of(context).translate('chang_home_location'), icon: 'https://trackware-schools.s3.eu-central-1.amazonaws.com/flutter_app/Assignments.svg',nameAr: AppLocalizations.of(context).translate('chang_home_location')));
-          //
-          // }
 
-          listDetail1.features!.forEach((element) {
-            listFeatures1.add(element);
-          });
-
-          AppCubit.get(context).setDetalil(
-              listDetail1.name,
-              listDetail1.studentGrade ?? "",
-              listDetail1.schoolName,
-              listDetail1.avatar,
-              listDetail1.id.toString(),
-              listDetail1.schoolLat,
-              listDetail1.schoolId.toString(),
-              listDetail1.schoolLng,
-              listDetail1.pickupRequestDistance.toString(),
-              listFeatures1);
-
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => Time_Table_Form(std_id: AppCubit.std)
-            ),
-          );
-        },
-        child: Row(children: [
-          CircleAvatar(
-            backgroundColor: Colors.transparent,
-            maxRadius: 5.w,
-            backgroundImage: NetworkImage(
-              '${listDetail1.avatar}',
-            ),
-          ),
-          SizedBox(
-            height: 10,
-            width: 10,
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "${listDetail1.fname}",
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Nunito',
-                    fontSize: 9),
-              ),
-              Text(
-                "${AppCubit.grade}",
-                style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    fontFamily: 'Nunito',
-                    fontSize: 9),
-              ),
-            ],
-          ),
-        ]),
-      ),
-    );
-  }
 
   Widget allWeekly(int index, String day) {
     Lines_time_table ass;
+    String nots='null';
     if(AppCubit.list_tableTime.length>index)
       {
         ass= AppCubit.list_tableTime[index];
@@ -446,94 +377,54 @@ class _Time_Table_FormState extends State<Time_Table_Form>
 
         AppCubit.subject_odoo.add(ass.subjectName.toString());
         AppCubit.subject_odoo = AppCubit.subject_odoo.toSet().toList();
-      
+        if (ass.subjectId.toString()!='null')
+          nots=ass.sequence.toString();
 
         if ((day.toLowerCase() == 'sunday' || day.toLowerCase() == 'sun') &&
             ass.sunday.toString().isNotEmpty) {
 
           return getCard_notAtt(index, ass.subjectName.toString(),
-              ass.sunday.toString(), ass.subjectId.toString());
+              ass.sunday.toString(), nots);
         }
         if ((day.toLowerCase() == 'saturday' || day.toLowerCase() == 'sat') &&
             ass.saturday.toString().isNotEmpty) {
+
           return getCard_notAtt(index, ass.subjectName.toString(),
-              ass.saturday.toString(), ass.subjectId.toString());
+              ass.saturday.toString(), nots);
         }
         if ((day.toLowerCase() == 'monday' || day.toLowerCase() == 'mon') &&
             ass.monday.toString().isNotEmpty) {
+
           return getCard_notAtt(index, ass.subjectName.toString(),
-              ass.monday.toString(), ass.subjectId.toString());
+              ass.monday.toString(), nots);
         }
         if ((day.toLowerCase() == 'thursday' || day.toLowerCase() == 'thu') &&
             ass.thursday.toString().isNotEmpty) {
+
           return getCard_notAtt(index, ass.subjectName.toString(),
-              ass.thursday.toString(), ass.subjectId.toString());
+              ass.thursday.toString(), nots);
         }
         if ((day.toLowerCase() == 'wednesday' || day.toLowerCase() == 'wed') &&
             ass.wednesday.toString().isNotEmpty) {
+
           return getCard_notAtt(index, ass.subjectName.toString(),
-              ass.wednesday.toString(), ass.subjectId.toString());
+              ass.wednesday.toString(), nots);
         }
         if ((day.toLowerCase() == 'friday' || day.toLowerCase() == 'fri') &&
             ass.friday.toString().isNotEmpty) {
+
           return getCard_notAtt(index, ass.subjectName.toString(),
-              ass.friday.toString(), ass.subjectId.toString());
+              ass.friday.toString(), nots);
         }
         if ((day.toLowerCase() == 'tuesday' || day.toLowerCase() == 'tue') &&
             ass.tuesday.toString().isNotEmpty) {
+
           return getCard_notAtt(index, ass.subjectName.toString(),
-              ass.tuesday.toString(), ass.subjectId.toString());
+              ass.tuesday.toString(), nots);
         }
       }
     else{
-      InkWell(
-        onTap: () {},
-        child: Card(
-            margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            child:Row(
-              children: [
-
-                Column(
-
-                  children: [
-                    Container(
-                      height: 100,
-                      margin: EdgeInsets.symmetric(horizontal: 15),
-                      child: Text('subject_note',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'Nunito',
-                              fontSize: 13,
-                              color:Color(0xffe84314))),
-                    ),
-                    // Container(margin: EdgeInsets.symmetric(horizontal: 10),
-                    //   child: Text('subjectName',
-                    //
-                    //       style: TextStyle(
-                    //           fontWeight: FontWeight.bold,
-                    //           fontFamily: 'Nunito',
-                    //           fontSize: 20,
-                    //           color:Color(0xffe84314))),
-                    // )
-                  ],),
-                // Expanded(
-                //   child: Container(
-                //       alignment: CacheHelper.getBoolean(key: 'lang').toString().contains('ar')?Alignment.centerLeft:Alignment.centerRight,
-                //       margin: EdgeInsets.only(right: CacheHelper.getBoolean(key: 'lang').toString().contains('ar')?30:0,left: CacheHelper.getBoolean(key: 'lang').toString().contains('ar')?0:30),
-                //       // decoration: BoxDecoration( borderRadius: BorderRadius.only(topLeft: Radius.circular(10),bottomLeft:Radius.circular(10) )),
-                //       width: 68,height: 73,
-                //       child:SvgPicture.asset(
-                //         "images/icons8_vegetarian_food.svg",
-                //         color:Color(0xffe84314),width: 48,height: 48, )
-                //
-                //   ),
-                // ),
-
-              ],)
-
-        ),
-      );
+      SizedBox(height: 20.h,);
     }
     // int index = 0;
 
@@ -547,7 +438,9 @@ class _Time_Table_FormState extends State<Time_Table_Form>
       int index_color, String subjectName, String subject_note, String notes) {
 
 
+
     if(notes=='null'){
+      print("ofofoofofof");
       return InkWell(
         onTap: () {},
         child: Card(
@@ -585,7 +478,7 @@ class _Time_Table_FormState extends State<Time_Table_Form>
                     child: Container(
                       alignment: CacheHelper.getBoolean(key: 'lang').toString().contains('ar')?Alignment.centerLeft:Alignment.centerRight,
                       margin: EdgeInsets.only(right: CacheHelper.getBoolean(key: 'lang').toString().contains('ar')?30:0,left: CacheHelper.getBoolean(key: 'lang').toString().contains('ar')?0:30),
-                      // decoration: BoxDecoration( borderRadius: BorderRadius.only(topLeft: Radius.circular(10),bottomLeft:Radius.circular(10) )),
+
                       width: 68,height: 73,
                       child:SvgPicture.asset(
                           "images/icons8_vegetarian_food.svg",
@@ -624,9 +517,9 @@ class _Time_Table_FormState extends State<Time_Table_Form>
               margin: EdgeInsets.symmetric(horizontal: 13, vertical: 13),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
             child: Container(alignment: Alignment.center,
-            child: Text(index_le.toString()
+            child: Text(notes
             ,style: TextStyle(color: colors[index_color]),)),
-            
+
             ),
            ),
           Column(

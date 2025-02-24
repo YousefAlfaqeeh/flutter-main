@@ -2,19 +2,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:lottie/lottie.dart';
-import 'package:udemy_flutter/models/modelClinic.dart';
 import 'package:udemy_flutter/modules/cubit/cubit.dart';
 import 'package:udemy_flutter/modules/cubit/states.dart';
 import 'package:udemy_flutter/modules/general/general_app.dart';
 import 'package:udemy_flutter/modules/home/new_home.dart';
 import 'package:udemy_flutter/modules/pickUp/pickup.dart';
 import 'package:udemy_flutter/modules/settings/setting.dart';
-import 'package:udemy_flutter/modules/studet_details/detail.dart';
 import 'package:udemy_flutter/modules/studet_details/new_detail.dart';
 import 'package:udemy_flutter/modules/tracking/tracking.dart';
 import 'package:udemy_flutter/shared/badgesModel.dart';
-import 'package:udemy_flutter/shared/components/customWidget.dart';
 import 'package:udemy_flutter/shared/components/dialog.dart';
 
 
@@ -238,8 +234,8 @@ class _BadgesState extends State<Badges> {
                       ? Expanded(
                     child:
                     ListView.separated(
-                      itemBuilder: (context, index) => badges(index,AppCubit.list_Badges[index]),
-                      itemCount: AppCubit.list_Badges.length,
+                      itemBuilder: (context, index) =>index<AppCubit.list_Badges.length ?badges(index,AppCubit.list_Badges[index]):SizedBox(height: 200,),
+                      itemCount: AppCubit.list_Badges.length+1,
                       separatorBuilder: (context, index) {
                         if(index==0){
                           return Container(

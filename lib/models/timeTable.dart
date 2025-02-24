@@ -72,6 +72,7 @@ class Columns {
 class Lines_time_table {
   int? subjectId;
   String? subjectName;
+  String? sequence;
   String? saturday;
   String? sunday;
   String? monday;
@@ -83,6 +84,7 @@ class Lines_time_table {
   Lines_time_table(
       {this.subjectId,
         this.subjectName,
+        this.sequence,
         this.saturday,
         this.sunday,
         this.monday,
@@ -93,6 +95,7 @@ class Lines_time_table {
 
   Lines_time_table.fromJson(Map<String, dynamic> json) {
     subjectId = json['subject_id'];
+    sequence = json['sequence'];
     subjectName = json['subject_name'];
     saturday = json['Saturday'];
     sunday = json['Sunday'];
@@ -108,6 +111,7 @@ class Lines_time_table {
     data['subject_id'] = this.subjectId;
     data['subject_name'] = this.subjectName;
     data['Saturday'] = this.saturday;
+    data['sequence'] = this.sequence;
     data['Sunday'] = this.sunday;
     data['Monday'] = this.monday;
     data['Tuesday'] = this.tuesday;

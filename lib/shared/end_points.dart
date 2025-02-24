@@ -1,11 +1,11 @@
 const String DEV_PROD = "dev";
 // const String DEV_PROD = "prod";
 // const String MAIN_URL ="https://boknyyx648.execute-api.eu-central-1.amazonaws.com/"+DEV_PROD;
-//  const String MAIN_URL ="http://apipy-stg.trackware.com";
+ const String MAIN_URL ="http://apipy-stg.trackware.com";
 // const String MAIN_URL ="http://apipy.trackware.com";//pord
-const String MAIN_URL ="http://192.168.1.82:8000";
+// const String MAIN_URL ="http://192.168.1.82:8000";
 const String SCHOOLS_LIST = "https://trackware-schools.s3.eu-central-1.amazonaws.com/tst.json";//dev
-// const String SCHOOLS_LIST = "https://trackware-schools.s3.eu-central-1.amazonaws.com/qc1.json";//dev
+// const String SCHOOLS_LIST = "https://trackware-schools.s3.eu-central-1.amazonaws.com/mobily.json";//dev
 // const String SCHOOLS_LIST = "https://trackware-schools.s3.eu-central-1.amazonaws.com/infos.json";//prod
 const String Logout = "/parents/logout/";
 const String Login1 = "/parents/login/";
@@ -55,6 +55,8 @@ const String Delete_banned="/api/delete_banned";
 const String Delete_food="/api/delete_food";
 const String Get_food_student="/api/get_food_s";
 const String Get_food_all_student="/api/food_all";
-
+const String Get_mark_student="/api/get_marks/";
+const String Post_canteen_all_day="/api/canteen_all_day";
+// /my/Canteen/all_day_children
 
 

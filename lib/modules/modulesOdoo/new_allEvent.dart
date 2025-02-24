@@ -16,10 +16,7 @@ import 'package:udemy_flutter/modules/notification/filter_odoo.dart';
 import 'package:udemy_flutter/modules/studet_details/new_detail.dart';
 import 'package:udemy_flutter/shared/components/customWidget.dart';
 import 'package:udemy_flutter/shared/local/cache_helper.dart';
-
-
-
-
+import 'package:udemy_flutter/shared/shareWid.dart';
 
 class New_AllEvents extends StatefulWidget {
   String std_id;
@@ -46,12 +43,11 @@ class _New_AllEventsState extends State<New_AllEvents> {
   onSearchTextChanged()async
   {
     list_Ass_Search.clear();
-    // print(AppCubit.stutes_notif_odoo);
+
     if(AppCubit.stutes_notif_odoo=='decline')
       {
         AppCubit.stutes_notif_odoo='cancel';
       }
-    // if(AppCubit.stutes_notif_odoo.isNotEmpty){
     if(AppCubit.stutes_notif_odoo.isEmpty && AppCubit.fromDate_odoo.toString().isEmpty && AppCubit.fromTo_odoo.toString().isEmpty) {
       setState(() {
 
@@ -67,6 +63,7 @@ class _New_AllEventsState extends State<New_AllEvents> {
     });}
     else if(AppCubit.stutes_notif_odoo.isEmpty && AppCubit.fromDate_odoo.toString().isNotEmpty && AppCubit.fromTo_odoo.toString().isEmpty){
       AppCubit.list_allEvents.forEach((element) {
+
         DateTime dt1=DateFormat('dd MMM yyyy').parse(element.startDate.toString());
         if((dt1.isAtSameMomentAs(AppCubit.fromDate_odoo) ||dt1.isAfter(AppCubit.fromDate_odoo)))
         {
@@ -83,16 +80,16 @@ class _New_AllEventsState extends State<New_AllEvents> {
       });}
     else if(AppCubit.stutes_notif_odoo.isEmpty && AppCubit.fromDate_odoo.toString().isNotEmpty && AppCubit.fromTo_odoo.toString().isNotEmpty){
       AppCubit.list_allEvents.forEach((element) {
+
         DateTime dt1=DateFormat('dd MMM yyyy').parse(element.startDate.toString());
         if(((dt1.isAtSameMomentAs(AppCubit.fromDate_odoo) || dt1.isAtSameMomentAs(AppCubit.fromTo_odoo))||((dt1.isBefore(AppCubit.fromTo_odoo) && dt1.isAfter(AppCubit.fromDate_odoo)))))
         {
-          // print(element.name);
           list_Ass_Search.add(element);
         }
       });}
     else if(AppCubit.stutes_notif_odoo.isNotEmpty && AppCubit.fromDate_odoo.toString().isNotEmpty && AppCubit.fromTo_odoo.toString().isNotEmpty){
       AppCubit.list_allEvents.forEach((element) {
-        // print("object"+element.participantState.toString());
+
         DateTime dt1=DateFormat('dd MMM yyyy').parse(element.startDate.toString());
 
         if(element.participantState.toString().toLowerCase().contains(AppCubit.stutes_notif_odoo.toLowerCase())&&((dt1.isAtSameMomentAs(AppCubit.fromDate_odoo) || dt1.isAtSameMomentAs(AppCubit.fromTo_odoo))||((dt1.isBefore(AppCubit.fromTo_odoo) && dt1.isAfter(AppCubit.fromDate_odoo)))))
@@ -111,10 +108,6 @@ class _New_AllEventsState extends State<New_AllEvents> {
     else if(AppCubit.stutes_notif_odoo.isNotEmpty && AppCubit.fromDate_odoo.toString().isEmpty && AppCubit.fromTo_odoo.toString().isNotEmpty){
       AppCubit.list_allEvents.forEach((element) {
         DateTime dt1=DateFormat('dd MMM yyyy').parse(element.startDate.toString());
-
-        // DateTime dt1=DateTime.parse(element.startDate.toString());
-        // String x=DateFormat('yyyy-MM-dd').format(DateTime.parse(element.startDate.toString()))+" 00:00:00";
-        // dt1=DateTime.parse(x.toString());
         if(element.participantState.toString().toLowerCase().contains(AppCubit.stutes_notif_odoo.toLowerCase())&&(dt1.isAtSameMomentAs(AppCubit.fromTo_odoo) ||dt1.isBefore(AppCubit.fromTo_odoo)))
         {
           list_Ass_Search.add(element);
@@ -142,7 +135,11 @@ class _New_AllEventsState extends State<New_AllEvents> {
     {
       //
       setState(() {
-        student.add(student_list(i, AppCubit.list_st[i]));
+        MaterialPageRoute navigator=  MaterialPageRoute(
+          builder: (context) =>         New_AllEvents( std_id: AppCubit.list_st[i].id.toString(),),
+        );
+        student.add(student_list(i,  AppCubit.list_st[i],widget.std_id , navigator,context));
+
       });
 
     }
@@ -151,9 +148,7 @@ class _New_AllEventsState extends State<New_AllEvents> {
         return WillPopScope(
           onWillPop: ()async {
             Reset.clear_searhe();
-            // AppCubit.stutes_notif_odoo='';
-            // AppCubit. fromDate_odoo=DateTime.parse("2016-01-01 00:00:00");
-            // AppCubit. fromTo_odoo=DateTime.parse("2035-01-01 00:00:00");
+            AppCubit.filter=false;
             if(AppCubit.back_home) {
               AppCubit.back_home=false;
               Navigator.push(
@@ -172,89 +167,6 @@ class _New_AllEventsState extends State<New_AllEvents> {
           child: Scaffold(
             appBar: CustomAppBar(student, AppLocalizations.of(context).translate('events')),
             bottomNavigationBar:CustomBottomBar("images/icons8_four_squares.svg", "images/icons8_home.svg", "images/picup_empty.svg", "images/icon_feather_search.svg","images/bus.svg", Color(0xff98aac9),  Color(0xff98aac9), Color(0xff98aac9), Color(0xff98aac9), Color(0xff98aac9)),
-
-            // appBar: AppBar(
-            //   toolbarHeight: 20.w,
-            //   backgroundColor:Colors.white,
-            //   leadingWidth: double.infinity/4,
-            //   leading: Padding(
-            //     padding:EdgeInsets.only(left: 20,top: 20,bottom: 10,right: 0),
-            //     // padding:  EdgeInsets.symmetric(vertical: 20,horizontal: 40),
-            //     child: Container(
-            //
-            //       child: Row(
-            //         // mainAxisAlignment: MainAxisAlignment.center,
-            //         children: [
-            //           IconButton(
-            //             onPressed: () {
-            //               Reset.clear_searhe();
-            //               // AppCubit.stutes_notif_odoo='';
-            //               // AppCubit. fromDate_odoo=DateTime.parse("2016-01-01 00:00:00");
-            //               // AppCubit. fromTo_odoo=DateTime.parse("2035-01-01 00:00:00");
-            //               // AppCubit.filter=false;
-            //               if(AppCubit.back_home) {
-            //                 AppCubit.back_home=false;
-            //                 Navigator.push(
-            //                   context,
-            //                   MaterialPageRoute(builder: (context) => Hiome_Kids()),
-            //                 );
-            //               }
-            //               else {
-            //                 Navigator.push(
-            //                   context,
-            //                   MaterialPageRoute(builder: (context) => New_Detail()),
-            //                 );
-            //               }
-            //             },
-            //             icon:SvgPicture.asset("images/chevron_left_solid.svg",color:Color(0xff98aac9) ),
-            //           ),
-            //           Container(
-            //
-            //             // child: Text("ufuufufufufufu"),
-            //             child: Text('Events',style: TextStyle(color:Color(0xff3c92d0),fontSize: 28,fontWeight: FontWeight.bold  )),
-            //
-            //           ),
-            //
-            //         ],
-            //       ),
-            //     ),
-            //   ),
-            //   actions: [
-            //     Padding(
-            //       padding:EdgeInsets.only(left: 10,top: 20,bottom: 10,right: 20),
-            //       child: Row(
-            //         children: [
-            //           CircleAvatar(
-            //             backgroundColor: Colors.transparent ,
-            //             maxRadius: 6.w,
-            //             backgroundImage: NetworkImage('${AppCubit.image}', ),
-            //           ),
-            //           PopupMenuButton(offset: Offset(0,AppBar().preferredSize.height),
-            //             shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
-            //             child:Icon(Icons.keyboard_arrow_down,size: 8.w,color: Color(0xff98aac9)) ,itemBuilder: (context) => [
-            //
-            //               PopupMenuItem(child:
-            //               Container(
-            //                 width:35.w,
-            //                 child: Column(
-            //                   children:student,
-            //
-            //                 ),
-            //               ))
-            //             ],)
-            //         ],
-            //       ),
-            //     ),
-            //   ],
-            //
-            //
-            //
-            //
-            //
-            //
-            //
-            //
-            // ),
             body:SingleChildScrollView(
               child: Container(
                 height:MediaQuery.of(context).size.height,
@@ -278,43 +190,15 @@ class _New_AllEventsState extends State<New_AllEvents> {
                             ));
 
                       })
-                    //   Row(
-                    //     crossAxisAlignment: CrossAxisAlignment.center,
-                    //     mainAxisAlignment: MainAxisAlignment.end,
-                    //     children: [
-                    //       Container(
-                    //         // color: Colors.red,
-                    //         child: Text('Filter', style: TextStyle(
-                    //             fontWeight: FontWeight.normal,
-                    //             fontSize: 13,
-                    //
-                    //             fontFamily: 'Nunito',
-                    //             color: Color(0xff222222))),
-                    //       ),
-                    //       IconButton(onPressed: () {
-                    //         if(AppCubit.stutes_notif_odoo=='cancel')
-                    //         {
-                    //           //decline
-                    //           AppCubit.stutes_notif_odoo='decline';
-                    //         }
-                    //       Navigator.push(
-                    //           context,
-                    //           MaterialPageRoute(
-                    //             builder: (context) => Filter_odoo(),
-                    //           ));
-                    //
-                    // }, icon:SvgPicture.asset("images/filter11.svg",color:  Color(0xff98aac9),width:6.w ,) ,color:  Color(0xff98aac9),),
-                    //     ],
-                    //   )
                       ,),
                     AppCubit.list_allEvents.length!=0
                         ? Expanded(
-                      child:list_Ass_Search.length!=0&& AppCubit.filter==true ? Padding(
+                      child:list_Ass_Search.length!=0|| AppCubit.filter==true ? Padding(
                         padding: const EdgeInsets.only(top: 8.0),
                         child: ListView.builder(
 
-                          itemBuilder: (context, index) => allWeekly(list_Ass_Search[index]),
-                          itemCount: list_Ass_Search.length,
+                          itemBuilder: (context, index) => index<list_Ass_Search.length?allWeekly(list_Ass_Search[index]):SizedBox(height: 200,),
+                          itemCount: list_Ass_Search.length+1,
                           shrinkWrap: true,
 
                         ),
@@ -323,8 +207,8 @@ class _New_AllEventsState extends State<New_AllEvents> {
                         padding: const EdgeInsets.only(top: 8.0),
                         child: ListView.builder(
 
-                          itemBuilder: (context, index) => allWeekly(AppCubit.list_allEvents[index]),
-                          itemCount: AppCubit.list_allEvents.length,
+                          itemBuilder: (context, index) => index<AppCubit.list_allEvents.length?allWeekly(AppCubit.list_allEvents[index]):SizedBox(height: 200,),
+                          itemCount: AppCubit.list_allEvents.length+1,
                           shrinkWrap: true,
 
                         ),
@@ -346,75 +230,32 @@ class _New_AllEventsState extends State<New_AllEvents> {
 
     );
   }
-  Widget student_list(int ind,Students  listDetail1) {
-
-
-
-    List<Features> listFeatures1=[];
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
-      child: InkWell(
-
-        onTap: () {
-
-          AppCubit.stutes_notif_odoo='';
-
-          listFeatures1.clear();
-          // if(listDetail1.changeLocation=true)
-          // {
-          //
-          //   listFeatures1.add( Features(name:  AppLocalizations.of(context).translate('chang_home_location'), icon: 'https://trackware-schools.s3.eu-central-1.amazonaws.com/flutter_app/Assignments.svg',nameAr: AppLocalizations.of(context).translate('chang_home_location')));
-          //
-          // }
-
-          listDetail1.features!.forEach((element) {
-
-
-            listFeatures1.add(element); });
-
-          AppCubit.get(context).setDetalil(listDetail1.name, listDetail1.studentGrade??"", listDetail1.schoolName, listDetail1.avatar, listDetail1.id.toString(),  listDetail1.schoolLat, listDetail1.schoolId.toString(), listDetail1.schoolLng, listDetail1.pickupRequestDistance.toString(), listFeatures1);
-
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => New_AllEvents( std_id: listDetail1.id.toString(),),),
-          );
-        },
-        child: Row(
-
-            children: [
-
-
-              CircleAvatar(
-                backgroundColor: Colors.transparent ,
-                maxRadius: 5.w,
-
-
-                backgroundImage: NetworkImage('${listDetail1.avatar}', ),
-
-              ),
-              SizedBox(height: 10,width: 10,),
-
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("${listDetail1.fname}",style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Nunito',fontSize: 9),),
-                  Text("${AppCubit.grade}",style: TextStyle(fontWeight: FontWeight.w500, fontFamily: 'Nunito',fontSize: 9),),
-                ],
-              ),
-            ]),
-      ),
-    );
-  }
   Widget allWeekly(ResultAllEvents ass) {
     DateTime dt1 = DateFormat('dd MMM yyyy').parse(ass.startDate.toString());
     var formatter = DateFormat.yMMMd('ar_SA');
     String formatted = CacheHelper.getBoolean(key: 'lang').toString().contains('ar')?formatter.format(dt1):ass.startDate.toString();
+
+
+    String p='';
+    if(ass.participantState.toString().toLowerCase()=="confirm")
+      {
+        p=AppLocalizations.of(context).translate('CONFIRM_ev');
+      }
+    else if(ass.participantState.toString().toLowerCase()=="draft")
+    {
+      p=AppLocalizations.of(context).translate('Draft');
+    }
+    else if(ass.participantState.toString().toLowerCase()=="cancel")
+    {
+      p=AppLocalizations.of(context).translate('reject');
+    }
+    else
+      {
+        p=AppLocalizations.of(context).translate('reject');
+      }
     return  InkWell(
       onTap: () {
         Reset.clear_searhe();
-        // AppCubit.stutes_notif_odoo='';
-        // AppCubit. fromDate_odoo=DateTime.parse("2016-01-01 00:00:00");
-        // AppCubit. fromTo_odoo=DateTime.parse("2035-01-01 00:00:00");
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => FormEvents_new(std_id: ass.eventId.toString())),);
@@ -459,7 +300,7 @@ class _New_AllEventsState extends State<New_AllEvents> {
 
                     Row(
                       children: [
-                        Expanded(child: Text(ass.participantState.toString(),style: TextStyle(fontWeight: FontWeight.normal, fontFamily: 'Nunito',fontSize: 12,color:Color(0xff98aac9)))),
+                        Expanded(child: Text(p,style: TextStyle(fontWeight: FontWeight.normal, fontFamily: 'Nunito',fontSize: 12,color:Color(0xff98aac9)))),
                         Visibility(
                           visible: ass.newAdded =='True',
                           child: Container(
@@ -503,31 +344,4 @@ class _New_AllEventsState extends State<New_AllEvents> {
 
   }
 
-  // Widget emptyAss()
-  // {
-  //   return Container(
-  //     alignment: Alignment.center,
-  //
-  //     child:Padding(
-  //       padding: EdgeInsets.symmetric(vertical: 50),
-  //       child: Column(children: [
-  //          Image(image: AssetImage("images/no_events.png") ,width: 65.w,height: 30.h,),
-  //         // SizedBox(height: 10,),
-  //         // Text("No Event added",style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Nunito',fontSize: 16,color: Color(0xff3c92d0).withOpacity(.51)))
-  //         Text("No Events ",style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Nunito',fontSize: 22,color: Colors.black)),
-  //         SizedBox(height: 10,),
-  //         InkWell(onTap: () {
-  //           Reset.clear_searhe();
-  //           // AppCubit.stutes_notif_odoo='';
-  //           // AppCubit. fromDate_odoo=DateTime.parse("2016-01-01 00:00:00");
-  //           // AppCubit. fromTo_odoo=DateTime.parse("2035-01-01 00:00:00");
-  //           Navigator.push(
-  //             context,
-  //             MaterialPageRoute(builder: (context) => New_Detail()),
-  //           );
-  //         },
-  //             child: Text("Return to profile",style: TextStyle(fontWeight: FontWeight.normal, fontFamily: 'Nunito',fontSize: 16,color: Color(0xff3c92d0),decoration: TextDecoration.underline)))
-  //       ]),
-  //     ) ,);
-  // }
 }

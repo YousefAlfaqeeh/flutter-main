@@ -30,3 +30,5 @@ class AppFormWorkState extends AppStates{}
 class AppFormEventState extends AppStates{}
 class AppProductState extends AppStates{}
 class AppLogoutState extends AppStates{}
+class AppConversation extends AppStates{}
+class AppChat extends AppStates{}

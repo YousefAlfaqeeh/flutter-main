@@ -100,7 +100,7 @@ class _Filter_odoo_LibarayState extends State<Filter_odoo_Libaray> {
                     leadingWidth: 30.w,
                     leading: Container(
                         padding: EdgeInsets.symmetric(horizontal: 2.w),
-                        child: Image(image: AssetImage('images/trackware_school.png'),width:  20.w,height: 15.w,)),
+                        child: Image(image: AssetImage(AppCubit.trackware_school),width:  20.w,height: 15.w,)),
                     actions: [
                       Padding(
                         padding: EdgeInsets.only(left: 30,top: 10,right: 30),
@@ -381,6 +381,21 @@ class _Filter_odoo_LibarayState extends State<Filter_odoo_Libaray> {
                                             fromTo.month.toString() +
                                             '-' +
                                             fromTo.year.toString();}}
+                                      else if(textTo!='Date To')
+                                      {
+                                        if(fromTo!=null)
+                                        {
+                                          AppCubit.fromTo_odoo=fromTo;
+                                        }
+                                      }
+                                      else if(textFrom!='Date From')
+                                      {
+                                        if(fromDate!=null)
+                                        {
+                                          AppCubit.fromDate_odoo=fromDate;
+
+                                        }
+                                      }
                                       AppCubit.stutes_notif_odoo=_character.toString();
                                       AppCubit.filter=true;
 
@@ -433,6 +448,15 @@ class _Filter_odoo_LibarayState extends State<Filter_odoo_Libaray> {
                                       // AppCubit. fromDate_odoo=DateTime.parse("2016-01-01 00:00:00");
                                       // AppCubit. fromTo_odoo=DateTime.parse("2035-01-01 00:00:00");
                                     });
+
+
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              Library(
+                                                  std_id: AppCubit.std,std_name: AppCubit.name),
+                                        ));
                                   },
 
                                   child: Container(

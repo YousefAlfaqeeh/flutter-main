@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
@@ -8,6 +9,7 @@ import 'package:flutter_animated_dialog/flutter_animated_dialog.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_holo_date_picker/widget/date_picker_widget.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
@@ -75,6 +77,7 @@ class _TrackingState extends State<Tracking> with WidgetsBindingObserver {
   Set<Marker> marker = new Set();
 
   Completer<GoogleMapController> _controller = Completer();
+
   var latlong1 = LatLng(37.42796133580664, -122.085749655962);
 
   static final CameraPosition _kGooglePlex = CameraPosition(
@@ -84,9 +87,16 @@ class _TrackingState extends State<Tracking> with WidgetsBindingObserver {
   LatLng currentLocation = _kGooglePlex.target;
 
   Future<void> location11() async {
-    LocationData? _myLocation = await LoctionService().currentLocation();
-
-    _animateCamera(_myLocation!);
+    if(Platform.isAndroid)
+    {
+      Position? _myLocation = await LoctionService().currentLocationAnd();
+      _animateCameraAnd(_myLocation!);
+    }
+    else
+    {
+      LocationData? _myLocation = await LoctionService().currentLocation();
+      _animateCamera(_myLocation!);
+    }
   }
 
   Future<void> _animateCamera(LocationData locationData) async {
@@ -100,28 +110,99 @@ class _TrackingState extends State<Tracking> with WidgetsBindingObserver {
         .buffer
         .asUint8List();
 
+    double homestL = double.parse(AppCubit.list_st[0].lat ?? "0");
+    double homestLn = double.parse(AppCubit.list_st[0].long ?? "0");
     marker.add(Marker(
         // draggable: true,
         icon: BitmapDescriptor.fromBytes(b1),
         markerId: MarkerId("0"),
-        position: LatLng(locationData.latitude!, locationData.longitude!)));
+        position: LatLng(homestL, homestLn)));
     double l = double.parse(AppCubit.list_st[0].schoolLat ?? "0");
     double ln = double.parse(AppCubit.list_st[0].schoolLng ?? "0");
     latlong1 = LatLng(l, ln);
 
     CameraPosition _kGooglePlex = CameraPosition(
-      target: LatLng(locationData.latitude!, locationData.longitude!),
+      target: LatLng(homestL, homestLn),
       zoom: 14.4746,
     );
 
-    lat = locationData.longitude;
+    lat = homestL;
+    long = homestLn;
+    controller.animateCamera(CameraUpdate.newCameraPosition(_kGooglePlex));
+  }
+  Future<void> _animateCameraAnd(Position locationData) async {
+    final GoogleMapController controller = await _controller.future;
+    lat = locationData.latitude;
     long = locationData.longitude;
+    Uint8List b1 = (await NetworkAssetBundle(
+        Uri.parse(AppCubit.list_st[0].avatar.toString()))
+        .load(
+        'https://trackware-schools.s3.eu-central-1.amazonaws.com/loction1.png'))
+        .buffer
+        .asUint8List();
+
+    double homestL = double.parse(AppCubit.list_st[0].lat ?? "0");
+    double homestLn = double.parse(AppCubit.list_st[0].long ?? "0");
+    marker.add(Marker(
+      // draggable: true,
+        icon: BitmapDescriptor.fromBytes(b1),
+        markerId: MarkerId("0"),
+        position: LatLng(homestL, homestLn)));
+    double l = double.parse(AppCubit.list_st[0].schoolLat ?? "0");
+    double ln = double.parse(AppCubit.list_st[0].schoolLng ?? "0");
+    latlong1 = LatLng(l, ln);
+
+    CameraPosition _kGooglePlex = CameraPosition(
+      target: LatLng(homestL, homestLn),
+      zoom: 14.4746,
+    );
+
+    lat = homestL;
+    long = homestLn;
+    controller.animateCamera(CameraUpdate.newCameraPosition(_kGooglePlex));
+  }
+
+  Future<void> _animateCameraSt(double lats,double longs) async {
+    final GoogleMapController controller = await _controller.future;
+    lat = lats;
+    long = longs;
+    Uint8List b1 = (await NetworkAssetBundle(
+        Uri.parse(AppCubit.list_st[0].avatar.toString()))
+        .load(
+        'https://trackware-schools.s3.eu-central-1.amazonaws.com/loction1.png'))
+        .buffer
+        .asUint8List();
+
+    // double homestL = double.parse(AppCubit.list_st[0].lat ?? "0");
+    // double homestLn = double.parse(AppCubit.list_st[0].long ?? "0");
+
+    marker.add(Marker(
+      // draggable: true,
+        icon: BitmapDescriptor.fromBytes(b1),
+        markerId: MarkerId("0"),
+        position: LatLng(lat, long)));
+    double l = double.parse(AppCubit.list_st[0].schoolLat ?? "0");
+    double ln = double.parse(AppCubit.list_st[0].schoolLng ?? "0");
+    marker.add(Marker(
+      // draggable: true,
+        icon: BitmapDescriptor.fromBytes(b1),
+        markerId: MarkerId("1"),
+        position: LatLng(l, ln)));
+    latlong1 = LatLng(l, ln);
+
+    CameraPosition _kGooglePlex = CameraPosition(
+      target: LatLng(lat, long),
+      zoom: 14.4746,
+    );
+
+    lat = lats;
+    long = longs;
     controller.animateCamera(CameraUpdate.newCameraPosition(_kGooglePlex));
   }
 
   @override
   void initState() {
-    location11();
+    // location11();
     // TODO: implement initState
     super.initState();
     WidgetsBinding.instance!.addObserver(this);
@@ -317,86 +398,84 @@ class _TrackingState extends State<Tracking> with WidgetsBindingObserver {
                   ),
                 ),
               ),
-              body: SingleChildScrollView(
-                child: Container(
-                  height: MediaQuery.of(context).size.height,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: Stack(
-                          alignment: Alignment.bottomCenter,
-                          children: [
-                            map
-                                ?
-                            // Expanded(
-                            //   child:
-                              Stack(
-                                children: [
-                                  GoogleMap(
-                                    mapType: MapType.hybrid,
-                                    initialCameraPosition: _kGooglePlex,
-                                    markers: marker,
-                                    onMapCreated:
-                                        (GoogleMapController controller) {
-                                      _controller.complete(controller);
-                                    },
-                                    onCameraMove: (position) {
-                                      setState(() {
-                                        currentLocation = position.target;
-                                      });
-                                    },
-                                  ),
-                                  Visibility(
-                                      visible: isRoundInfo,
-                                      child: info_round()),
-                                ],
-                              )
-                            // )
-                                : 
-                            // Expanded(
-                            //   child:
-                            Container(
+              body:  Container(
+                height: MediaQuery.of(context).size.height,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Stack(
+                        alignment: Alignment.bottomCenter,
+                        children: [
+                          map
+                              ?
+                          // Expanded(
+                          //   child:
+                          Stack(
+                            children: [
+                              GoogleMap(
+                                mapType: MapType.hybrid,
+                                initialCameraPosition: _kGooglePlex,
+                                markers: marker,
+                                onMapCreated:
+                                    (GoogleMapController controller) {
+                                  _controller.complete(controller);
+                                },
+                                onCameraMove: (position) {
+                                  setState(() {
+                                    currentLocation = position.target;
+                                  });
+                                },
+                              ),
+                              Visibility(
+                                  visible: isRoundInfo,
+                                  child: info_round()),
+                            ],
+                          )
+                          // )
+                              :
+                          // Expanded(
+                          //   child:
+                          Container(
                               margin: EdgeInsets.only(top: MediaQuery.of(context).size.height/5),
-                           alignment: Alignment.topCenter,
-                                  child: CustomLotte('assets/lang/bus.json')),
-                            // ),
-                            DraggableScrollableSheet(
+                              alignment: Alignment.topCenter,
+                              child: CustomLotte('assets/lang/bus.json')),
+                          // ),
+                          DraggableScrollableSheet(
 
-                              initialChildSize: .45,
-                              minChildSize: .2,
-                              maxChildSize: .97,
-                              expand: false,
-                              builder: (context, scrollController) =>
-                                  SingleChildScrollView(
-                                      controller: scrollController,
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.vertical(
-                                              top: Radius.circular(10)),
-                                          color: Colors.white,
-                                        ),
-                                        child: Column(
-                                          children: [
+                            initialChildSize: .45,
+                            minChildSize: .2,
+                            maxChildSize: .97,
+                            expand: false,
+                            builder: (context, scrollController) =>
+                                SingleChildScrollView(
+                                    controller: scrollController,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.vertical(
+                                            top: Radius.circular(10)),
+                                        color: Colors.white,
+                                      ),
+                                      child: Column(
+                                        children: [
 
-                                            Visibility(visible: isstudent, child: studentTracking()),
-                                            Visibility(visible: isAbs, child: infoAbsent()),
-                                            SizedBox(
-                                              height: 60.h,
-                                            ),
+                                          Visibility(visible: isstudent, child: studentTracking()),
+                                          Visibility(visible: isAbs, child: infoAbsent()),
+                                          SizedBox(
+                                            height: 60.h,
+                                          ),
 
-                                            // infoAbsent(),
-                                          ],
-                                        ),
-                                      )),
-                            )
-                          ],
-                        ),
-                      )
+                                          // infoAbsent(),
+                                        ],
+                                      ),
+                                    )),
+                          )
+                        ],
+                      ),
+                    )
 
-                    ],
-                  ),
+                  ],
                 ),
               ),
             ),
@@ -430,6 +509,7 @@ class _TrackingState extends State<Tracking> with WidgetsBindingObserver {
       round_name = school_name.toString() + '-stg-round-' + round_id.toString();
     } else {
       round_name = school_name.toString() + '-round-' + round_id.toString();
+      print(round_name);
     }
     DateTime dateTime = DateTime.now();
     final snapshot = await ref
@@ -496,13 +576,6 @@ class _TrackingState extends State<Tracking> with WidgetsBindingObserver {
     );
 
     var activityType = listDetail1.studentStatus!.activityType.toString();
-    // print('fffff'+listDetail1.studentStatus!.activityType.toString()+listDetail1.fname!);
-    // if(listDetail1.showMap==true){
-    //
-    //   setState(() {
-    //     map=true;
-    //
-    //   });}
     if (listDetail1.isActive == false && activityType != 'in') {
       round = AppLocalizations.of(context).translate('no_active_round');
       text_color = Colors.grey;
@@ -559,6 +632,8 @@ class _TrackingState extends State<Tracking> with WidgetsBindingObserver {
       ),
       child: InkWell(
         onTap: () async {
+          // print("--------------kkkkllluuuuuyyyyyyy");
+          // print(listDetail1.name);
           t?.cancel();
           busNum = listDetail1.busId.toString();
           assistant_name = listDetail1.assistantName.toString();
@@ -566,10 +641,13 @@ class _TrackingState extends State<Tracking> with WidgetsBindingObserver {
           driver = listDetail1.driverName.toString();
           var lat = listDetail1.schoolLat;
           var lon = listDetail1.schoolLng;
+
+
           var school_name = listDetail1.db.toString();
           var round_id = listDetail1.roundId.toString();
 
           if (listDetail1.isActive == true && activityType == 'in') {
+
             if (activityType != 'out' ||
                 !activityType.toString().contains('show') ||
                 !activityType.toString().contains('absent')) {
@@ -581,9 +659,11 @@ class _TrackingState extends State<Tracking> with WidgetsBindingObserver {
               });
               // print(listDetail1.showMap);
               if (listDetail1.showMap == true) {
+
                 setState(() {
                   map = true;
                 });
+                _animateCameraSt(double.parse(listDetail1.lat ?? "0"),double.parse(listDetail1.long ?? "0"));
                 t = Timer.periodic(new Duration(seconds: 5), (timer) {
                   getLoctionBus(lat, lon, school_name.toString(), round_id);
                 });
@@ -593,7 +673,8 @@ class _TrackingState extends State<Tracking> with WidgetsBindingObserver {
                 });
               }
             }
-          } else {
+          }
+          else {
             setState(() {
               map = false;
             });
@@ -603,11 +684,12 @@ class _TrackingState extends State<Tracking> with WidgetsBindingObserver {
 
           setState(() {
             // print('fffff' + listDetail1.showMap.toString());
-            if (listDetail1.showMap == true) {
-              setState(() {
-                map = true;
-              });
-            }
+            // if (listDetail1.showMap == true) {
+            //   print('fffff' + listDetail1.showMap.toString());
+            //   setState(() {
+            //     map = true;
+            //   });
+            // }
 
             stuid = listDetail1.id.toString();
             school_id = listDetail1.schoolId.toString();
@@ -1299,7 +1381,7 @@ builder: (context, setState) {
                 groupValue: absent,
                 onChanged: (value) {
                   setState(() {
-                    print(absent);
+                    // print(absent);
                     absent = value.toString();
                   });
                 },
@@ -1322,81 +1404,6 @@ builder: (context, setState) {
             },
           ),
         ),
-//           InkWell(
-//             onTap: () async {
-//               // showDialog(
-//               //
-//               //     context: context, builder: (context) => send_abs());
-//               if(absent.toString()!='null'  ){
-//                if(isStudentInRound){
-// setState(() {
-//   isAbs=false;
-//   isstudent=true;
-// });
-//
-//                 var attendanceDate =newDate.day.toString()+'/'+newDate.month.toString()+'/'+newDate.year.toString();
-//                 var response=await  DioHelper.postData(url:Perent_Notification , data:{
-//                   'name':'childs_attendance',
-//                   'absent':'true',
-//                   'long':0.0,
-//                   'lat':0.0,
-//                   'target_rounds':absent,
-//
-//                   'student_id':stuid.toString(),
-//                   'when':attendanceDate ,
-//
-//
-//                 },token: CacheHelper.getBoolean(key: 'authorization') ).then((value) {
-//                   // Navigator.pop(context);
-//                   // showDialog(context: context, builder: (context) => AlertDialog(actions: [Text('data')]),);
-//                   print(value.data);
-//                   if(value.data.toString().toLowerCase().contains("ok")) {
-//                     showDialog(
-//
-//                         context: context, builder: (context) => send_abs());
-//                   }
-//                   else{
-//                     showDialog(context: context, builder: (context) => dialog(massage: 'You can not send the absent request because your child has checked-in the bus', title: Text('') ),);
-//                   }
-//
-//                 },).catchError((onError){
-//                   print(onError);
-//
-//                   // showDialog(context: context, builder: (context) => dialog(massage: 'ddddddddddd', title: Image(image: AssetImage('images/img_error.png')) ),);
-//
-//                 });}
-//               }
-//               else
-//               {
-//                 showDialog(context: context, builder: (context) => dialog(massage: 'please select absent type', title: Image(image: AssetImage('images/img_error.png')) ),);
-//
-//               }
-//               // pickupRequest();
-//
-//
-//
-//             },
-//
-//             child: Container(
-//               margin: const EdgeInsets.symmetric(horizontal: 30),
-//               padding: EdgeInsets.all(15),
-//               decoration: BoxDecoration(
-//                 borderRadius: BorderRadius.circular(5),
-//                 color: Color(0xff3c92d0),
-//               ),
-//               alignment: Alignment.center,
-//               child: Text(
-//                 AppLocalizations.of(context)
-//                     .translate('absent_request'),
-//                 style: GoogleFonts.montserrat(
-//                   color: Colors.white,
-//                   fontSize: 18,
-//                   fontWeight: FontWeight.normal,
-//                 ),
-//               ),
-//             ),
-//           ),
-//           SizedBox(height: 30,)
       ],
     ),
   );

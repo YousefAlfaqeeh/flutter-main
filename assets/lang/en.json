@@ -63,7 +63,7 @@
 	"help": "Help",
 	"call_school": "Call School",
 	"about": "About this App",
-
+	"absence_request_bt": "Absence request",
 
 
 
@@ -95,6 +95,7 @@
 	"requested_Date": "Requested Date",
 	"approved": "Approved",
 	"rejected": "Rejected",
+	"reject": "Reject",
 	"waiting_Approved": "Waiting Approved",
 	"Filter": "Filter",
 	"total_badges": "Total badges",
@@ -115,8 +116,10 @@
 	"contact": "Contact",
 	"teacher": "Teacher",
 	"Attachments": "Attachments",
+	"Attachments_student": "Attachments",
 	"Upload_File": "Upload File ",
 	"CONFIRM": "CONFIRM",
+	"CONFIRM_ev": "CONFIRM",
 	"SUCCESSFULLY_CONFIRMED": "YOU HAVE SUCCESSFULLY CONFIRMED THE EVENT",
 	"confirmed_the_event": "confirmed the event",
 	"You_have_successfully": "You have successfully declined the event  ",
@@ -215,7 +218,7 @@
 	"schedule_Meals": "Schedule Meals",
 	"banned_food": "Banned Food",
 	"has_successfully": "The request has successfully sent",
-	"search": "search",
+	"search": "Search",
 	"categorias": "Categories",
 	"add_item": "Add Items",
 	"add": "Add",
@@ -230,5 +233,18 @@
 	"basket": "1 item added to breakfast Basket",
 	"all_day": "Apply to All Days",
 	"all_ch": "Apply to All Children's",
-	"remove_data": "Are you sure you want to remove ?"
+	"remove_data": "Are you sure you want to remove ?",
+	"mark": "Marks",
+	"SelectReason": "Select Reason",
+	"Sick":"Sick",
+	"Accidental": "Accidental",
+	"Deathـofـrelative": "Death of relative",
+	"Other": "Other",
+	"Messages": "Messages",
+	"typeـaـmessage": "Type a message",
+	"no_mraks_added": "No Mraks added",
+	"external": "External Recourses",
+
+	"product_exceeded": "You cannot buy this product because you have exceeded the amount limit of ",
+	"products_total_amount": " and the total amount of bought products is "
 }

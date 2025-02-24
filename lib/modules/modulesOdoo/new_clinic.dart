@@ -5,7 +5,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:sizer/sizer.dart';
 import 'package:udemy_flutter/localizations.dart';
-import 'package:udemy_flutter/models/kidsList.dart';
 import 'package:udemy_flutter/models/method.dart';
 import 'package:udemy_flutter/models/modelClinic.dart';
 import 'package:udemy_flutter/modules/cubit/cubit.dart';
@@ -15,6 +14,7 @@ import 'package:udemy_flutter/modules/notification/filter_odoo.dart';
 import 'package:udemy_flutter/modules/studet_details/new_detail.dart';
 import 'package:udemy_flutter/shared/components/customWidget.dart';
 import 'package:udemy_flutter/shared/local/cache_helper.dart';
+import 'package:udemy_flutter/shared/shareWid.dart';
 
 class Clinic_new extends StatefulWidget {
   String std_id;
@@ -32,12 +32,14 @@ class _Clinic_newState extends State<Clinic_new> {
 
   onSearchTextChanged() async {
     list_Ass_Search.clear();
+    print(AppCubit.fromTo_odoo);
     // if(AppCubit.stutes_notif_odoo.isNotEmpty){
     if (AppCubit.fromDate_odoo.toString().isEmpty &&
         AppCubit.fromTo_odoo.toString().isEmpty) {
       setState(() {});
       return;
-    } else if (AppCubit.fromDate_odoo.toString().isEmpty &&
+    }
+    else if (AppCubit.fromDate_odoo.toString().isEmpty &&
         AppCubit.fromTo_odoo.toString().isNotEmpty) {
       AppCubit.list_clinic.forEach((element) {
         flg = true;
@@ -47,26 +49,27 @@ class _Clinic_newState extends State<Clinic_new> {
           list_Ass_Search.add(element);
         }
       });
-    } else if (AppCubit.fromDate_odoo.toString().isNotEmpty &&
+    }
+    else if (AppCubit.fromDate_odoo.toString().isNotEmpty &&
         AppCubit.fromTo_odoo.toString().isNotEmpty) {
       AppCubit.list_clinic.forEach((element) {
         flg = true;
         DateTime dt1 = DateFormat('dd MMM yyyy').parse(element.date.toString());
-        if (((dt1.isAtSameMomentAs(AppCubit.fromDate_odoo) ||
-                dt1.isAtSameMomentAs(AppCubit.fromTo_odoo)) ||
-            ((dt1.isBefore(AppCubit.fromTo_odoo) &&
-                dt1.isAfter(AppCubit.fromDate_odoo))))) {
+        if (((dt1.isAtSameMomentAs(AppCubit.fromDate_odoo) ||dt1.isAtSameMomentAs(AppCubit.fromTo_odoo)) ||
+            ((dt1.isBefore(AppCubit.fromTo_odoo) && dt1.isAfter(AppCubit.fromDate_odoo))))) {
           list_Ass_Search.add(element);
         }
       });
-    } else if (AppCubit.stutes_notif_odoo.isNotEmpty &&
+    }
+    else if (AppCubit.stutes_notif_odoo.isNotEmpty &&
         AppCubit.fromDate_odoo.toString().isNotEmpty &&
         AppCubit.fromTo_odoo.toString().isEmpty) {
+
       AppCubit.list_clinic.forEach((element) {
         flg = true;
         DateTime dt1 = DateFormat('dd MMM yyyy').parse(element.date.toString());
         if ((dt1.isAtSameMomentAs(AppCubit.fromDate_odoo) ||
-            dt1.isAfter(AppCubit.fromDate_odoo))) {
+            dt1.isAfter(AppCubit.fromTo_odoo))) {
           list_Ass_Search.add(element);
         }
       });
@@ -92,7 +95,11 @@ class _Clinic_newState extends State<Clinic_new> {
     for (int i = 0; i < AppCubit.list_st.length; i++) {
       //
       setState(() {
-        student.add(student_list(i, AppCubit.list_st[i]));
+        MaterialPageRoute navigator=  MaterialPageRoute(
+          builder: (context) => Clinic_new(std_id:  AppCubit.list_st[i].id.toString()),
+        );
+        student.add(student_list(i,  AppCubit.list_st[i],widget.std_id , navigator,context));
+
       });
     }
     return BlocProvider(
@@ -102,9 +109,7 @@ class _Clinic_newState extends State<Clinic_new> {
           return WillPopScope(
             onWillPop: () async {
               Reset.clear_searhe();
-              // AppCubit.stutes_notif_odoo='';
-              // AppCubit. fromDate_odoo=DateTime.parse("2016-01-01 00:00:00");
-              // AppCubit. fromTo_odoo=DateTime.parse("2035-01-01 00:00:00");
+              AppCubit.filter=false;
               AppCubit.show_st = true;
               if (AppCubit.back_home) {
                 AppCubit.back_home = false;
@@ -132,95 +137,6 @@ class _Clinic_newState extends State<Clinic_new> {
                   Color(0xff98aac9),
                   Color(0xff98aac9),
                   Color(0xff98aac9)),
-              // appBar: AppBar(
-              //   toolbarHeight: 20.w,
-              //   backgroundColor:Colors.white,
-              //   leadingWidth: double.infinity/4,
-              //   leading: Padding(
-              //     padding:EdgeInsets.only(left: 10,top: 20,bottom: 10,right: 0),
-              //     // padding:  EdgeInsets.symmetric(vertical: 20,horizontal: 40),
-              //     child: Container(
-              //
-              //       child: Row(
-              //         // mainAxisAlignment: MainAxisAlignment.center,
-              //         children: [
-              //           IconButton(
-              //             onPressed: () {
-              //               Reset.clear_searhe();
-              //               // AppCubit.stutes_notif_odoo='';
-              //               // AppCubit. fromDate_odoo=DateTime.parse("2016-01-01 00:00:00");
-              //               // AppCubit. fromTo_odoo=DateTime.parse("2035-01-01 00:00:00");
-              //               // AppCubit.show_st=true;
-              //               if(AppCubit.back_home) {
-              //                 AppCubit.back_home=false;
-              //                 Navigator.push(
-              //                   context,
-              //                   MaterialPageRoute(builder: (context) => Hiome_Kids()),
-              //                 );
-              //               }
-              //               else {
-              //                 Navigator.push(
-              //                   context,
-              //                   MaterialPageRoute(builder: (context) => New_Detail()),
-              //                 );
-              //               }
-              //             },
-              //             icon:SvgPicture.asset("images/chevron_left_solid.svg",color:Color(0xff98aac9) ),
-              //           ),
-              //           Container(
-              //
-              //             // child: Text("ufuufufufufufu"),
-              //             child: Text('Clinic',style: TextStyle(color:Color(0xff3c92d0),fontSize: 28,fontWeight: FontWeight.bold  )),
-              //
-              //           ),
-              //
-              //         ],
-              //       ),
-              //     ),
-              //   ),
-              //   actions: [
-              //     Padding(
-              //       padding:EdgeInsets.only(left: 10,top: 20,bottom: 10,right: 20),
-              //       // padding:  EdgeInsets.symmetric(vertical: 20,horizontal: 40),
-              //       child: Row(
-              //         children: [
-              //           // Container(
-              //           //
-              //           //   width: MediaQuery.of(context).size.width/8,
-              //           //   decoration: BoxDecoration(borderRadius: BorderRadius.circular(60),color:  Colors.transparent ,
-              //           //       image:DecorationImage(image: NetworkImage("${AppCubit.image}"))),
-              //           // ),
-              //           CircleAvatar(
-              //             backgroundColor: Colors.transparent ,
-              //             maxRadius: 6.w,
-              //             backgroundImage: NetworkImage('${AppCubit.image}', ),
-              //           ),
-              //           PopupMenuButton(offset: Offset(0,AppBar().preferredSize.height),
-              //             shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
-              //             child:Icon(Icons.keyboard_arrow_down,size: 8.w,color: Color(0xff98aac9)) ,itemBuilder: (context) => [
-              //
-              //               PopupMenuItem(child:
-              //               Container(
-              //                 width:35.w,
-              //                 child: Column(
-              //                   children:student,
-              //
-              //                 ),
-              //               ))
-              //             ],)
-              //         ],
-              //       ),
-              //     ),
-              //   ],
-              //
-              //
-              //
-              //
-              //
-              //
-              //
-              //
-              // ),
               appBar: CustomAppBar(
                   student, AppLocalizations.of(context).translate('Clinic')),
               body: Container(
@@ -240,39 +156,15 @@ class _Clinic_newState extends State<Clinic_new> {
                             ));
                       })
 
-                      // Row(
-                      //   crossAxisAlignment: CrossAxisAlignment.center,
-                      //   mainAxisAlignment: MainAxisAlignment.end,
-                      //   children: [
-                      //     Container(
-                      //       // color: Colors.red,
-                      //       child: Text('Filter', style: TextStyle(
-                      //           fontWeight: FontWeight.normal,
-                      //           fontSize: 13,
-                      //
-                      //           fontFamily: 'Nunito',
-                      //           color: Color(0xff222222))),
-                      //     ),
-                      //     IconButton(onPressed: () {
-                      //       AppCubit.show_st=false;
-                      //       Navigator.push(
-                      //           context,
-                      //           MaterialPageRoute(
-                      //             builder: (context) => Filter_odoo(),
-                      //           ));
-                      //
-                      //     }, icon:SvgPicture.asset("images/filter11.svg",color:  Color(0xff98aac9),width:6.w ,) ,color:  Color(0xff98aac9),),
-                      //   ],
-                      // )
                       ,
                     ),
                     AppCubit.list_clinic.length != 0
                         ? Expanded(
-                            child: list_Ass_Search.length != 0
+                            child: list_Ass_Search.length != 0 || AppCubit.filter==true
                                 ? ListView.separated(
-                                    itemBuilder: (context, index) =>
-                                        clinic(list_Ass_Search[index]),
-                                    itemCount: list_Ass_Search.length,
+                                    itemBuilder: (context, index) =>index<list_Ass_Search.length?
+                                        clinic(list_Ass_Search[index]):SizedBox(height: 200,),
+                                    itemCount: list_Ass_Search.length+1,
                                     separatorBuilder: (context, index) {
                                       return Container(
                                           child: SizedBox(
@@ -281,9 +173,9 @@ class _Clinic_newState extends State<Clinic_new> {
                                     },
                                   )
                                 : ListView.separated(
-                                    itemBuilder: (context, index) =>
-                                        clinic(AppCubit.list_clinic[index]),
-                                    itemCount: AppCubit.list_clinic.length,
+                                    itemBuilder: (context, index) =>index<AppCubit.list_clinic.length?
+                                        clinic(AppCubit.list_clinic[index]):SizedBox(height: 200,),
+                                    itemCount: AppCubit.list_clinic.length+1,
                                     separatorBuilder: (context, index) {
                                       return Container(
                                           child: SizedBox(
@@ -308,81 +200,7 @@ class _Clinic_newState extends State<Clinic_new> {
     );
   }
 
-  Widget student_list(int ind, Students listDetail1) {
-    List<Features> listFeatures1 = [];
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
-      child: InkWell(
-        onTap: () {
-          AppCubit.school_image = listDetail1.schoolImage.toString();
 
-          listFeatures1.clear();
-          // if(listDetail1.changeLocation=true)
-          // {
-          //
-          //   listFeatures1.add( Features(name:  AppLocalizations.of(context).translate('chang_home_location'), icon: 'https://trackware-schools.s3.eu-central-1.amazonaws.com/flutter_app/Assignments.svg',nameAr: AppLocalizations.of(context).translate('chang_home_location')));
-          //
-          // }
-
-          listDetail1.features!.forEach((element) {
-            listFeatures1.add(element);
-          });
-
-          AppCubit.get(context).setDetalil(
-              listDetail1.name,
-              listDetail1.studentGrade ?? "",
-              listDetail1.schoolName,
-              listDetail1.avatar,
-              listDetail1.id.toString(),
-              listDetail1.schoolLat,
-              listDetail1.schoolId.toString(),
-              listDetail1.schoolLng,
-              listDetail1.pickupRequestDistance.toString(),
-              listFeatures1);
-
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) =>
-                  Clinic_new(std_id: listDetail1.id.toString()),
-            ),
-          );
-        },
-        child: Row(children: [
-          CircleAvatar(
-            backgroundColor: Colors.transparent,
-            maxRadius: MediaQuery.of(context).size.width / 12,
-            backgroundImage: NetworkImage(
-              '${listDetail1.avatar}',
-            ),
-          ),
-          SizedBox(
-            height: 10,
-            width: 10,
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "${listDetail1.fname}",
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Nunito',
-                    fontSize: 9),
-              ),
-              Text(
-                "${AppCubit.grade}",
-                style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    fontFamily: 'Nunito',
-                    fontSize: 9),
-              ),
-            ],
-          ),
-        ]),
-      ),
-    );
-  }
 
   Widget clinic(Result result) {
 

@@ -1,16 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:dio/dio.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:gallery_saver/gallery_saver.dart';
 import 'package:intl/intl.dart';
-import 'package:open_file/open_file.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sizer/sizer.dart';
 import 'package:udemy_flutter/localizations.dart';
@@ -20,14 +17,12 @@ import 'package:udemy_flutter/models/modelEvent.dart';
 import 'package:udemy_flutter/modules/cubit/cubit.dart';
 import 'package:udemy_flutter/modules/cubit/states.dart';
 import 'package:udemy_flutter/modules/home/new_home.dart';
-import 'package:udemy_flutter/modules/modulesOdoo/allEvents.dart';
 import 'package:udemy_flutter/modules/modulesOdoo/new_allEvent.dart';
-import 'package:udemy_flutter/modules/studet_details/new_detail.dart';
 import 'package:udemy_flutter/shared/components/customWidget.dart';
 import 'package:udemy_flutter/shared/end_points.dart';
 import 'package:udemy_flutter/shared/local/cache_helper.dart';
 import 'package:udemy_flutter/shared/network/remote/dio_helper.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:udemy_flutter/shared/shareWid.dart';
 
 class FormEvents_new extends StatefulWidget {
   String std_id;
@@ -57,7 +52,13 @@ class _FormEvents_newState extends State<FormEvents_new> {
     for (int i = 0; i < AppCubit.list_st.length; i++) {
       //
       setState(() {
-        student.add(student_list(i, AppCubit.list_st[i]));
+        MaterialPageRoute navigator=  MaterialPageRoute(
+          builder: (context) => New_AllEvents(
+            std_id:  AppCubit.list_st[i].id.toString(),
+          ),
+        );
+        student.add(student_list(i,  AppCubit.list_st[i],widget.std_id , navigator,context));
+
       });
     }
     return BlocProvider(
@@ -65,118 +66,142 @@ class _FormEvents_newState extends State<FormEvents_new> {
           AppCubit()..getFormEvent(widget.std_id, AppCubit.std),
       child: BlocConsumer<AppCubit, AppStates>(
         builder: (context, state) {
-          return Scaffold(
-            appBar: AppBar(
-              toolbarHeight: 20.w,
-              backgroundColor: Colors.white,
-              leadingWidth: double.infinity / 4,
-              leading: Padding(
-                padding:
-                    EdgeInsets.only(left: 2, top: 20, bottom: 10, right: 0),
-                // padding:  EdgeInsets.symmetric(vertical: 20,horizontal: 40),
-                child: Container(
-                  child: Row(
-                    // mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Transform.rotate(angle:CacheHelper.getBoolean(key: 'lang').toString().contains('ar')?9.5:0 ,
-                        child: IconButton(
-                          onPressed: () {
-                            Reset.clear_searhe();
-                            // AppCubit.stutes_notif_odoo='';
-                            // AppCubit. fromDate_odoo=DateTime.parse("2016-01-01 00:00:00");
-                            // AppCubit. fromTo_odoo=DateTime.parse("2035-01-01 00:00:00");
-                            if (AppCubit.back_home) {
-                              AppCubit.back_home = false;
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => Hiome_Kids()),
-                              );
-                            } else {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        New_AllEvents(std_id: AppCubit.std)),
-                              );
-                            }
-                          },
-                          icon: SvgPicture.asset("images/chevron_left_solid.svg",
-                              color: Color(0xff98aac9)),
-                        ),
-                      ),
-                      Container(
-                        // child: Text("ufuufufufufufu"),
-                        child: Text(
-                            AppLocalizations.of(context).translate('events'),
-                            style: TextStyle(
-                                color: Color(0xff3c92d0),
-                                fontSize: 26,
-                                fontWeight: FontWeight.bold)),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              actions: [
-                Padding(
+          return WillPopScope(
+            onWillPop: () async {
+              Reset.clear_searhe();
+              if (AppCubit.back_home) {
+                AppCubit.back_home = false;
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => Hiome_Kids()),
+                );
+              } else {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          New_AllEvents(std_id: AppCubit.std)),
+                );
+              }
+              return false;
+            },
+            child: Scaffold(
+              appBar: AppBar(
+                toolbarHeight: 20.w,
+                backgroundColor: Colors.white,
+                leadingWidth: double.infinity / 4,
+                leading: Padding(
                   padding:
-                      EdgeInsets.only(left: 10, top: 20, bottom: 10, right: 20),
-                  child: Row(
-                    children: [
-                      CircleAvatar(
-                        backgroundColor: Colors.transparent,
-                        maxRadius: 6.w,
-                        backgroundImage: NetworkImage(
-                          '${AppCubit.image}',
+                      EdgeInsets.only(left: 2, top: 20, bottom: 10, right: 0),
+                  // padding:  EdgeInsets.symmetric(vertical: 20,horizontal: 40),
+                  child: Container(
+                    child: Row(
+                      // mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Transform.rotate(
+                          angle: CacheHelper.getBoolean(key: 'lang')
+                                  .toString()
+                                  .contains('ar')
+                              ? 9.5
+                              : 0,
+                          child: IconButton(
+                            onPressed: () {
+                              Reset.clear_searhe();
+                              if (AppCubit.back_home) {
+                                AppCubit.back_home = false;
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Hiome_Kids()),
+                                );
+                              } else {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          New_AllEvents(std_id: AppCubit.std)),
+                                );
+                              }
+                            },
+                            icon: SvgPicture.asset(
+                                "images/chevron_left_solid.svg",
+                                color: Color(0xff98aac9)),
+                          ),
                         ),
-                      ),
-                      PopupMenuButton(
-                        offset: Offset(0, AppBar().preferredSize.height),
-                        shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(10))),
-                        child: Icon(Icons.keyboard_arrow_down,
-                            size: 8.w, color: Color(0xff98aac9)),
-                        itemBuilder: (context) => [
-                          PopupMenuItem(
-                              child: Container(
-                            width: 35.w,
-                            child: Column(
-                              children: student,
-                            ),
-                          ))
-                        ],
-                      )
-                    ],
+                        Container(
+                          // child: Text("ufuufufufufufu"),
+                          child: Text(
+                              AppLocalizations.of(context).translate('events'),
+                              style: TextStyle(
+                                  color: Color(0xff3c92d0),
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'Nunito')),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ],
-            ),
-            bottomNavigationBar: CustomBottomBar(
-                "images/icons8_four_squares.svg",
-                "images/icons8_home.svg",
-                "images/picup_empty.svg",
-                "images/icon_feather_search.svg",
-                "images/bus.svg",
-                Color(0xff98aac9),
-                Color(0xff98aac9),
-                Color(0xff98aac9),
-                Color(0xff98aac9),
-                Color(0xff98aac9)),
-            body: Container(
-              color: Color(0xfff6f8fb),
-              child: Column(
-                children: [
-                  Expanded(
-                    child: ListView.builder(
-                      itemBuilder: (context, index) =>
-                          formEvent(AppCubit.list_Event[index]),
-                      itemCount: AppCubit.list_Event.length,
-                      shrinkWrap: true,
+                actions: [
+                  Padding(
+                    padding: EdgeInsets.only(
+                        left: 10, top: 20, bottom: 10, right: 20),
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          backgroundColor: Colors.transparent,
+                          maxRadius: 6.w,
+                          backgroundImage: NetworkImage(
+                            '${AppCubit.image}',
+                          ),
+                        ),
+                        PopupMenuButton(
+                          offset: Offset(0, AppBar().preferredSize.height),
+                          shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10))),
+                          child: Icon(Icons.keyboard_arrow_down,
+                              size: 8.w, color: Color(0xff98aac9)),
+                          itemBuilder: (context) => [
+                            PopupMenuItem(
+                                child: Container(
+                              width: 35.w,
+                              child: Column(
+                                children: student,
+                              ),
+                            ))
+                          ],
+                        )
+                      ],
                     ),
                   ),
                 ],
+              ),
+              bottomNavigationBar: CustomBottomBar(
+                  "images/icons8_four_squares.svg",
+                  "images/icons8_home.svg",
+                  "images/picup_empty.svg",
+                  "images/icon_feather_search.svg",
+                  "images/bus.svg",
+                  Color(0xff98aac9),
+                  Color(0xff98aac9),
+                  Color(0xff98aac9),
+                  Color(0xff98aac9),
+                  Color(0xff98aac9)),
+              body: Container(
+                color: Color(0xfff6f8fb),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: ListView.builder(
+                        itemBuilder: (context, index) =>
+                            formEvent(AppCubit.list_Event[index]),
+                        itemCount: AppCubit.list_Event.length,
+                        shrinkWrap: true,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           );
@@ -190,12 +215,21 @@ class _FormEvents_newState extends State<FormEvents_new> {
   Widget formEvent(ResultEvent ass) {
     DateTime dt1 = DateFormat('dd MMM yyyy').parse(ass.startDate.toString());
     var formatter = DateFormat.yMMMd('ar_SA');
-    String formatted = CacheHelper.getBoolean(key: 'lang').toString().contains('ar')?formatter.format(dt1):ass.startDate.toString();
+    String formatted =
+        CacheHelper.getBoolean(key: 'lang').toString().contains('ar')
+            ? formatter.format(dt1)
+            : ass.startDate.toString();
     dt1 = DateFormat('dd MMM yyyy').parse(ass.registrationStartDate.toString());
-    String registrationStartDate = CacheHelper.getBoolean(key: 'lang').toString().contains('ar')?formatter.format(dt1):ass.registrationStartDate.toString();
+    String registrationStartDate =
+        CacheHelper.getBoolean(key: 'lang').toString().contains('ar')
+            ? formatter.format(dt1)
+            : ass.registrationStartDate.toString();
     //  ass.registrationLastDate.toString()
     dt1 = DateFormat('dd MMM yyyy').parse(ass.registrationLastDate.toString());
-    String registrationLastDate = CacheHelper.getBoolean(key: 'lang').toString().contains('ar')?formatter.format(dt1):ass.registrationLastDate.toString();
+    String registrationLastDate =
+        CacheHelper.getBoolean(key: 'lang').toString().contains('ar')
+            ? formatter.format(dt1)
+            : ass.registrationLastDate.toString();
     return SingleChildScrollView(
       child: Container(
         child: Column(
@@ -307,8 +341,7 @@ class _FormEvents_newState extends State<FormEvents_new> {
                                           child: Container(
                                               padding: EdgeInsets.symmetric(
                                                   horizontal: 10, vertical: 10),
-                                              child: Text(
-                                                  formatted,
+                                              child: Text(formatted,
                                                   style: TextStyle(
                                                       fontWeight:
                                                           FontWeight.normal,
@@ -415,7 +448,7 @@ class _FormEvents_newState extends State<FormEvents_new> {
                       Row(
                         children: [
                           Container(
-                              margin: EdgeInsets.only(left: 10,right: 10),
+                              margin: EdgeInsets.only(left: 10, right: 10),
                               child: Text(
                                   AppLocalizations.of(context)
                                       .translate('Start_date'),
@@ -424,17 +457,13 @@ class _FormEvents_newState extends State<FormEvents_new> {
                                       fontFamily: 'Nunito',
                                       fontSize: 14,
                                       color: Color(0xff000000)))),
-                          // Padding(
-                          //   padding: const EdgeInsets.only(left: 15.0),
-                          //   child: Icon(Icons.calendar_today,color: Color(0xff3c92d0),size: 25,),
-                          // ),
+
 
                           Expanded(
                               child: Container(
                                   padding: EdgeInsets.symmetric(
                                       horizontal: 10, vertical: 10),
-                                  child: Text(
-                                      registrationStartDate,
+                                  child: Text(registrationStartDate,
                                       style: TextStyle(
                                           fontWeight: FontWeight.normal,
                                           fontFamily: 'Nunito',
@@ -445,7 +474,7 @@ class _FormEvents_newState extends State<FormEvents_new> {
                       Row(
                         children: [
                           Container(
-                              margin: EdgeInsets.only(left: 10,right: 10),
+                              margin: EdgeInsets.only(left: 10, right: 10),
                               child: Text(
                                   AppLocalizations.of(context)
                                       .translate('End_date'),
@@ -454,17 +483,12 @@ class _FormEvents_newState extends State<FormEvents_new> {
                                       fontFamily: 'Nunito',
                                       fontSize: 14,
                                       color: Color(0xff000000)))),
-                          // Padding(
-                          //   padding: const EdgeInsets.only(left: 22.0),
-                          //   child: Icon(Icons.calendar_today,color: Color(0xff3c92d0),size: 25,),
-                          // ),
 
                           Expanded(
                               child: Container(
                                   padding: EdgeInsets.symmetric(
                                       horizontal: 10, vertical: 10),
-                                  child: Text(
-                                      registrationLastDate,
+                                  child: Text(registrationLastDate,
                                       style: TextStyle(
                                           fontWeight: FontWeight.normal,
                                           fontFamily: 'Nunito',
@@ -799,9 +823,9 @@ class _FormEvents_newState extends State<FormEvents_new> {
                             dashPattern: [10, 2],
                             child: InkWell(
                               onTap: () async {
-                                var status = await Permission.storage.request();
-                                if (status.isGranted) {
-                                  final result = await FilePicker.platform
+                                if(!Platform.isAndroid) {
+                                  FilePickerResult? result = await FilePicker
+                                      .platform
                                       .pickFiles(allowMultiple: true);
                                   if (result == null) return;
                                   Map<String, dynamic> data = {};
@@ -824,6 +848,66 @@ class _FormEvents_newState extends State<FormEvents_new> {
                                         flg = false;
                                     });
                                     // });
+                                  }
+                                } else {
+                                  final deviceInfo =
+                                      await DeviceInfoPlugin().androidInfo;
+                                  if (deviceInfo.version.sdkInt! > 32) {
+                                    FilePickerResult? result = await FilePicker
+                                        .platform
+                                        .pickFiles(allowMultiple: true);
+                                    if (result == null) return;
+                                    Map<String, dynamic> data = {};
+
+                                    for (int i = 0; i < result.count; i++) {
+                                      data['name'] = result.files[i].name;
+                                      data['size'] = result.files[i].size;
+                                      data['file'] = base64Encode(
+                                          File(result.files[i].path!)
+                                              .readAsBytesSync());
+                                      data['base_url'] = CacheHelper.getBoolean(
+                                          key: 'base_url');
+                                      // setStateBu((){
+                                      setState(() {
+                                        file.add(data);
+
+                                        if (file.length > 0)
+                                          flg = true;
+                                        else
+                                          flg = false;
+                                      });
+                                      // });
+                                    }
+                                  } else {
+                                    var status =
+                                        await Permission.storage.request();
+                                    if (status.isGranted) {
+                                      final result = await FilePicker.platform
+                                          .pickFiles(allowMultiple: true);
+                                      if (result == null) return;
+                                      Map<String, dynamic> data = {};
+
+                                      for (int i = 0; i < result.count; i++) {
+                                        data['name'] = result.files[i].name;
+                                        data['size'] = result.files[i].size;
+                                        data['file'] = base64Encode(
+                                            File(result.files[i].path!)
+                                                .readAsBytesSync());
+                                        data['base_url'] =
+                                            CacheHelper.getBoolean(
+                                                key: 'base_url');
+                                        // setStateBu((){
+                                        setState(() {
+                                          file.add(data);
+
+                                          if (file.length > 0)
+                                            flg = true;
+                                          else
+                                            flg = false;
+                                        });
+                                        // });
+                                      }
+                                    }
                                   }
                                 }
                               },
@@ -956,9 +1040,9 @@ class _FormEvents_newState extends State<FormEvents_new> {
                                               child: Text(
                                                 AppLocalizations.of(context)
                                                     .translate(
-                                                        'SUCCESSFULLY_CONFIRMED'),textAlign:TextAlign.center,
+                                                        'SUCCESSFULLY_CONFIRMED'),
+                                                textAlign: TextAlign.center,
                                                 style: TextStyle(
-
                                                     fontSize: 16,
                                                     fontFamily: 'Nunito',
                                                     fontWeight: FontWeight.bold,
@@ -970,14 +1054,12 @@ class _FormEvents_newState extends State<FormEvents_new> {
                                               // padding: EdgeInsets.only(left: 20),
                                               width: double.infinity,
                                               child: Text(
-                                                AppLocalizations.of(context)
-                                                    .translate(
-                                                        'confirmed_the_event'),
+                                               AppCubit.student_name,
                                                 style: TextStyle(
-                                                    fontSize: 16,
+                                                    fontSize: 14,
                                                     fontFamily: 'Nunito',
                                                     fontWeight: FontWeight.bold,
-                                                    color: Color(0xff3c92d0)),
+                                                    color: Colors.black),
                                               ),
                                             ),
 
@@ -985,14 +1067,7 @@ class _FormEvents_newState extends State<FormEvents_new> {
                                               height: 10,
                                             ),
 
-                                            // Container(alignment: Alignment.center,
-                                            //   width: double.infinity,
-                                            //   child:  TextButton(onPressed: () {
-                                            //     Navigator.push(
-                                            //       context,
-                                            //       MaterialPageRoute(builder: (context) => AllEvents(std_id:AppCubit.std)),);
-                                            //   },child: Text("Back to event page",style: TextStyle(fontSize: 12,decoration: TextDecoration.underline,fontWeight: FontWeight.normal,color:Color(0xff3c92d0) ),)),),
-                                          ],
+                                                                                     ],
                                         )
                                       ],
                                     ));
@@ -1015,11 +1090,6 @@ class _FormEvents_newState extends State<FormEvents_new> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            // Container(
-                            //
-                            //
-                            //     padding: EdgeInsets.all(15),
-                            //     child: Icon(Icons.check_circle,color: Colors.white,)),
                             Text(
                                 AppLocalizations.of(context)
                                     .translate('CONFIRM'),
@@ -1053,11 +1123,6 @@ class _FormEvents_newState extends State<FormEvents_new> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            // Container(
-                            //
-                            //
-                            //     padding: EdgeInsets.all(15),
-                            //     child: Icon(Icons.dangerous_outlined,color: Colors.black,)),
                             Text(
                                 AppLocalizations.of(context)
                                     .translate('DECLINE'),
@@ -1076,90 +1141,15 @@ class _FormEvents_newState extends State<FormEvents_new> {
     );
   }
 
-  // method get  Permission save  any file
-  Future<bool> _requestWrritePermission() async {
-    await Permission.storage.request();
-    return await Permission.storage.request().isGranted;
-  }
-
 //  method download any file and save
   Future<void> downloadFile(String url, String fileName) async {
-    var url1 = Uri.parse(url);
+      var splitted = fileName.split('.');
+      if (splitted.length >= 2)
+        fileName = splitted[0].toString().split(' ')[0].toString() +
+            '.' +
+            splitted[1].toString();
 
-    if (Platform.isIOS) {
-      if (await canLaunchUrl(url1)) {
-        // print(CacheHelper.getBoolean(key: 'sessionId'));
-        // await launchUrl(url);
-        await launch(url.toString(), headers: {
-          "X-Openerp-Session-Id": CacheHelper.getBoolean(key: 'sessionId')
-        });
-      }
-      // FlutterDownloader.enqueue(url: url, savedDir: directory!.path ,showNotification: true,openFileFromNotification: true);
-      // await launch(url);
-    }
-    bool hasPermission = await _requestWrritePermission();
-
-    if (hasPermission) {
-      Dio dio = Dio();
-      //
-      //   // String fileName=attachments[i].name.toString();
-      //
-      Directory? directory;
-      try {
-        if (Platform.isIOS) {
-          directory = await getApplicationDocumentsDirectory();
-        } else {
-          directory = Directory('/storage/emulated/0/Download/');
-          // Put file in global download folder, if for an unknown reason it didn't exist, we fallback
-          // ignore: avoid_slow_async_io
-          if (!await directory.exists())
-            directory = await getExternalStorageDirectory();
-        }
-      } catch (err, stack) {
-        // print("Cannot get download folder path");
-      }
-      //
-      directory!.create();
-      await dio.download(
-        url,
-        directory.path + fileName,
-        onReceiveProgress: (count, total) {
-          // print(count / total * 100);
-        },
-      ).then((value) async {
-        // var url1=Uri.parse(url);
-        // var url1=Uri.parse(url);
-
-        // if(Platform.isIOS &&  await canLaunchUrl(url1))
-        // {
-        //   if(await canLaunchUrl(url1))
-        //   {
-        //     print(CacheHelper.getBoolean(key: 'sessionId'));
-        //     // await launchUrl(url);
-        //     await launch(url.toString(), headers: {
-        //       "X-Openerp-Session-Id":
-        //       CacheHelper.getBoolean(key: 'sessionId')
-        //     } );
-        //   }
-        //   // FlutterDownloader.enqueue(url: url, savedDir: directory!.path ,showNotification: true,openFileFromNotification: true);
-        //   await launch(url);
-        // }
-        // else {
-
-        OpenFile.open(directory!.path + fileName)
-            .then((value) {})
-            .onError((error, stackTrace) {});
-        // }
-      }).catchError((onError) {});
-
-      GallerySaver.saveImage("${directory.path}$fileName")
-          .then((value) {})
-          .onError((error, stackTrace) {
-        GallerySaver.saveVideo("${directory!.path}$fileName")
-            .then((value) {})
-            .onError((error, stackTrace) => null);
-      });
-    }
+    openAtta(url, context, fileName);
   }
 
   void showDialodUplod() {
@@ -1370,13 +1360,7 @@ class _FormEvents_newState extends State<FormEvents_new> {
                                           fontFamily: 'Nunito',
                                           fontSize: 24,
                                           color: Color(0xff3c92d0)))),
-                              // Expanded(
-                              //   child: Container(alignment: Alignment.centerRight,
-                              //     margin: EdgeInsets.only(right: 20),
-                              //     padding: EdgeInsets.all(8),child: InkWell(onTap: () {
-                              //       Navigator.pop(context);
-                              //     },child: SvgPicture.asset("images/times_solid.svg")),),
-                              // ),
+
                             ],
                           ),
                           SizedBox(
@@ -1393,7 +1377,6 @@ class _FormEvents_newState extends State<FormEvents_new> {
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                       fontWeight: FontWeight.normal,
-
                                       fontFamily: 'Nunito',
                                       fontSize: 20,
                                       color: Colors.black))),
@@ -1402,7 +1385,7 @@ class _FormEvents_newState extends State<FormEvents_new> {
                           ),
                           Container(
                             alignment: Alignment.center,
-                            margin: const EdgeInsets.only(left: 20,right: 20),
+                            margin: const EdgeInsets.only(left: 20, right: 20),
 
                             decoration: BoxDecoration(
                                 color: Colors.green,
@@ -1438,30 +1421,30 @@ class _FormEvents_newState extends State<FormEvents_new> {
                                                   builder:
                                                       (context, setStateBu) {
                                                     return Container(
+
+
                                                       child:
                                                           SingleChildScrollView(
                                                         child: Column(
                                                           children: [
                                                             Row(
+
                                                               children: [
+
                                                                 // Container(alignment: Alignment.centerLeft,child:Text("Event",style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Nunito',fontSize: 24,color:Color(0xff3c92d0)))) ,
                                                                 Expanded(
                                                                   child:
                                                                       Container(
+                                                                        // color: Colors.red,
+                                                                        width: double.infinity,
                                                                     alignment:
                                                                         Alignment
-                                                                            .centerRight,
-                                                                    margin: EdgeInsets.only(
-                                                                        right:
-                                                                            20),
-                                                                    padding:
-                                                                        EdgeInsets
-                                                                            .all(8),
+                                                                            .topRight,
+
                                                                     child:
                                                                         InkWell(
                                                                       onTap:
                                                                           () {
-                                                                        // Navigator.pop(context);
                                                                       },
                                                                       child: IconButton(
                                                                           onPressed: () {
@@ -1475,6 +1458,8 @@ class _FormEvents_newState extends State<FormEvents_new> {
                                                                   ),
                                                                 ),
                                                               ],
+                                                              crossAxisAlignment: CrossAxisAlignment.end,
+                                                              mainAxisAlignment: MainAxisAlignment.end,
                                                             ),
                                                             SizedBox(
                                                               height: 10,
@@ -1508,91 +1493,12 @@ class _FormEvents_newState extends State<FormEvents_new> {
                                                                         0xff3c92d0)),
                                                               ),
                                                             ),
-                                                            // Container(
-                                                            //   alignment:
-                                                            //       Alignment
-                                                            //           .center,
-                                                            //   padding: EdgeInsets
-                                                            //       .only(
-                                                            //           left: 20),
-                                                            //   width: double
-                                                            //       .infinity,
-                                                            //   child: Text(
-                                                            //     AppLocalizations.of(
-                                                            //             context)
-                                                            //         .translate(
-                                                            //             'Declined_the_event'),
-                                                            //     style: TextStyle(
-                                                            //         fontSize:
-                                                            //             16,
-                                                            //         fontWeight:
-                                                            //             FontWeight
-                                                            //                 .bold,
-                                                            //         color: Color(
-                                                            //             0xff3c92d0)),
-                                                            //   ),
-                                                            // ),
+
 
                                                             SizedBox(
                                                               height: 10,
                                                             ),
-                                                            // Container(
-                                                            //   alignment: Alignment.center,
-                                                            //   margin: const EdgeInsets.only(left: 20),
-                                                            //
-                                                            //   decoration: BoxDecoration(
-                                                            //       color: Colors.green,
-                                                            //       borderRadius: BorderRadius.circular(20)),
-                                                            //   width:MediaQuery.of(context).size.width/2,
-                                                            //   // color: Colors.orange,
-                                                            //   child: MaterialButton(
-                                                            //       child: Text('Yes',style: TextStyle(color: Colors.white),),
-                                                            //       onPressed: () async {
-                                                            //         Map data={};
-                                                            //         data['wk_id']=eventId;
-                                                            //         var responseSettings = await DioHelper.uplodeData(
-                                                            //             url: Cancel_Event,
-                                                            //             data: data,
-                                                            //             token: CacheHelper.getBoolean(key: 'authorization'))
-                                                            //             .then((value) {
-                                                            //
-                                                            //           Navigator.push(
-                                                            //             context,
-                                                            //             MaterialPageRoute(builder: (context) => FormEvents_new(std_id: eventId)),);
-                                                            //
-                                                            //
-                                                            //
-                                                            //         },).catchError((onError) {
-                                                            //
-                                                            //         });
-                                                            //
-                                                            //
-                                                            //
-                                                            //       }
-                                                            //     // },
-                                                            //   ),
-                                                            // ),
-                                                            // Container(
-                                                            //   alignment: Alignment.center,
-                                                            //   margin: const EdgeInsets.only(left: 20),
-                                                            //
-                                                            //   decoration: BoxDecoration(
-                                                            //       color: Colors.white,
-                                                            //       borderRadius: BorderRadius.circular(20)),
-                                                            //   width:MediaQuery.of(context).size.width/2,
-                                                            //   // color: Colors.orange,
-                                                            //   child: MaterialButton(
-                                                            //       child: Text('No',style: TextStyle(color: Colors.black),),
-                                                            //       onPressed: () async {
-                                                            //
-                                                            //
-                                                            //         Navigator.pop(context);
-                                                            //
-                                                            //
-                                                            //       }
-                                                            //     // },
-                                                            //   ),
-                                                            // ),
+
                                                           ],
                                                         ),
                                                       ),
@@ -1600,9 +1506,7 @@ class _FormEvents_newState extends State<FormEvents_new> {
                                                   },
                                                 ),
                                               ));
-                                      // Navigator.push(
-                                      //   context,
-                                      //   MaterialPageRoute(builder: (context) => FormEvents_new(std_id: eventId)),);
+
                                     },
                                   ).catchError((onError) {});
                                 }
@@ -1611,7 +1515,7 @@ class _FormEvents_newState extends State<FormEvents_new> {
                           ),
                           Container(
                             alignment: Alignment.center,
-                            margin: const EdgeInsets.only(left: 20,right: 20),
+                            margin: const EdgeInsets.only(left: 20, right: 20),
 
                             decoration: BoxDecoration(
                                 color: Colors.white,
@@ -1638,80 +1542,5 @@ class _FormEvents_newState extends State<FormEvents_new> {
             ));
   }
 
-  Widget student_list(int ind, Students listDetail1) {
-    List<Features> listFeatures1 = [];
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
-      child: InkWell(
-        onTap: () {
-          AppCubit.stutes_notif_odoo = '';
-          AppCubit.school_image = listDetail1.schoolImage.toString();
-          listFeatures1.clear();
-          // if(listDetail1.changeLocation=true)
-          // {
-          //
-          //   listFeatures1.add( Features(name:  AppLocalizations.of(context).translate('chang_home_location'), icon: 'https://trackware-schools.s3.eu-central-1.amazonaws.com/flutter_app/Assignments.svg',nameAr: AppLocalizations.of(context).translate('chang_home_location')));
-          //
-          // }
 
-          listDetail1.features!.forEach((element) {
-            listFeatures1.add(element);
-          });
-
-          AppCubit.get(context).setDetalil(
-              listDetail1.name,
-              listDetail1.studentGrade ?? "",
-              listDetail1.schoolName,
-              listDetail1.avatar,
-              listDetail1.id.toString(),
-              listDetail1.schoolLat,
-              listDetail1.schoolId.toString(),
-              listDetail1.schoolLng,
-              listDetail1.pickupRequestDistance.toString(),
-              listFeatures1);
-
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => New_AllEvents(
-                std_id: listDetail1.id.toString(),
-              ),
-            ),
-          );
-        },
-        child: Row(children: [
-          CircleAvatar(
-            backgroundColor: Colors.transparent,
-            maxRadius: 5.w,
-            backgroundImage: NetworkImage(
-              '${listDetail1.avatar}',
-            ),
-          ),
-          SizedBox(
-            height: 10,
-            width: 10,
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "${listDetail1.fname}",
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Nunito',
-                    fontSize: 9),
-              ),
-              Text(
-                "${AppCubit.grade}",
-                style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    fontFamily: 'Nunito',
-                    fontSize: 9),
-              ),
-            ],
-          ),
-        ]),
-      ),
-    );
-  }
 }

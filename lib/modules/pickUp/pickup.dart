@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:io';
+
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -21,6 +23,7 @@ import 'package:udemy_flutter/shared/components/dialog.dart';
 import 'package:udemy_flutter/shared/end_points.dart';
 import 'package:udemy_flutter/shared/local/cache_helper.dart';
 import 'dart:ui' as ui;
+import 'package:geolocator/geolocator.dart';
 import 'dart:math';
 
 import 'package:udemy_flutter/shared/network/remote/dio_helper.dart';
@@ -71,49 +74,36 @@ class _PickUp_RequestState extends State<PickUp_Request> {
   LatLng currentLocation = _kGooglePlex.target;
 
   Future<void> location11() async {
-    LocationData? _myLocation = await LoctionService().currentLocation();
+    try{
+      if(Platform.isAndroid)
+        {
+          Position? _myLocation = await LoctionService().currentLocationAnd();
+          _animateCameraAnd(_myLocation!);
+        }
+      else
+        {
+          LocationData? _myLocation = await LoctionService().currentLocation();
+          _animateCamera(_myLocation!);
+        }
 
-    _animateCamera(_myLocation!);
+    }
+catch(e)
+    {
+      print(e);
+    }
   }
 
   Future<void> _animateCamera(LocationData locationData) async {
-    // Uint8List b= (await NetworkAssetBundle(Uri.parse('https://www.fluttercampus.com/img/car.png')).load('https://www.fluttercampus.com/img/car.png')).buffer.asUint8List();
     final GoogleMapController controller = await _controller.future;
     lat = locationData.latitude;
     long = locationData.longitude;
 
     marker.add(Marker(
-        // draggable: true,
-        // icon: BitmapDescriptor.fromBytes(b),
-
         markerId: MarkerId("0"),
         position: LatLng(locationData.latitude!, locationData.longitude!)));
     double l = double.parse(AppCubit.list_st[0].schoolLat ?? "0");
     double ln = double.parse(AppCubit.list_st[0].schoolLng ?? "0");
     latlong1 = LatLng(l, ln);
-    // Uint8List schoool_imag= (await NetworkAssetBundle(Uri.parse('https://trackware-schools.s3.eu-central-1.amazonaws.com/test.png')).load('https://trackware-schools.s3.eu-central-1.amazonaws.com/test.png')).buffer.asUint8List();
-
-//     for(int i =0;i<AppCubit.list_st.length;i++)
-//       {
-//         double l= double.parse(AppCubit.list_st[i].schoolLat??"0");
-//         double ln= double.parse(AppCubit.list_st[i].schoolLng??"0");
-// latlong1=LatLng(l,ln);
-//         // Uint8List schoool_imag= (await NetworkAssetBundle(Uri.parse('https://trackware-schools.s3.eu-central-1.amazonaws.com/test.png')).load('https://trackware-schools.s3.eu-central-1.amazonaws.com/test.png')).buffer.asUint8List();
-//         Uint8List b= (await NetworkAssetBundle(Uri.parse(AppCubit.list_st[i].avatar.toString())).load('https://trackware-schools.s3.eu-central-1.amazonaws.com/test.png')).buffer.asUint8List();
-//         marker.add( Marker(
-//
-//             draggable: true,
-//
-//             icon: BitmapDescriptor.fromBytes(b),
-//             onDragEnd: (value) {
-//               lat=value.longitude;
-//               long=value.longitude;
-//             },
-//
-//             markerId: MarkerId(AppCubit.list_st[i].id.toString()),
-//             position: LatLng(l, ln)));
-//       }
-
     CameraPosition _kGooglePlex = CameraPosition(
       target: LatLng(locationData.latitude!, locationData.longitude!),
       zoom: 14.4746,
@@ -123,6 +113,28 @@ class _PickUp_RequestState extends State<PickUp_Request> {
     long = locationData.longitude;
     controller.animateCamera(CameraUpdate.newCameraPosition(_kGooglePlex));
   }
+
+  Future<void> _animateCameraAnd(Position locationData) async {
+    final GoogleMapController controller = await _controller.future;
+    lat = locationData.latitude;
+    long = locationData.longitude;
+
+    marker.add(Marker(
+        markerId: MarkerId("0"),
+        position: LatLng(locationData.latitude!, locationData.longitude!)));
+    double l = double.parse(AppCubit.list_st[0].schoolLat ?? "0");
+    double ln = double.parse(AppCubit.list_st[0].schoolLng ?? "0");
+    latlong1 = LatLng(l, ln);
+    CameraPosition _kGooglePlex = CameraPosition(
+      target: LatLng(locationData.latitude!, locationData.longitude!),
+      zoom: 14.4746,
+    );
+
+    lat = locationData.longitude;
+    long = locationData.longitude;
+    controller.animateCamera(CameraUpdate.newCameraPosition(_kGooglePlex));
+  }
+
 
   //
   // Future<void> post_change_location(String type)
@@ -663,10 +675,22 @@ class _PickUp_RequestState extends State<PickUp_Request> {
     marker.clear();
 
     location11();
+    double? currentLocation_lat;
+    double? currentLocation_longitude;
+    if(Platform.isAndroid)
+    {
+      Position? _myLocation = await LoctionService().currentLocationAnd();
+      currentLocation_lat = _myLocation?.latitude;
+      currentLocation_longitude = _myLocation?.longitude;
+    }
+    else
+    {
+      LocationData? _myLocation = await LoctionService().currentLocation();
+      currentLocation_lat = _myLocation?.latitude;
+      currentLocation_longitude = _myLocation?.longitude;
+    }
+    // LocationData? _myLocation = await LoctionService().currentLocation();
 
-    LocationData? _myLocation = await LoctionService().currentLocation();
-    double? currentLocation_lat = _myLocation?.latitude;
-    double? currentLocation_longitude = _myLocation?.longitude;
     Uint8List b = (await NetworkAssetBundle(
                 Uri.parse(AppCubit.list_st[0].avatar.toString()))
             .load(
@@ -694,8 +718,8 @@ class _PickUp_RequestState extends State<PickUp_Request> {
     if (calculateDistance(
             double.parse(schoolLat ?? "0"),
             double.parse(schoolLng ?? "0"),
-            _myLocation?.latitude,
-            _myLocation?.longitude) <
+        currentLocation_lat,
+        currentLocation_longitude) <
         double.parse(distance!)) {
       setState(() {
         circles.add(Circle(

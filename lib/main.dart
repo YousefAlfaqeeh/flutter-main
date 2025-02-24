@@ -1,7 +1,5 @@
-// @dart=2.9
-import 'dart:developer';
-import 'dart:ffi';
 import 'dart:io';
+
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -12,61 +10,102 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
-import 'package:location/location.dart';
+// import 'package:get/get.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:sizer/sizer.dart';
 import 'package:udemy_flutter/localizations.dart';
 import 'package:udemy_flutter/modules/cubit/blocObserver.dart';
 import 'package:udemy_flutter/modules/cubit/cubit.dart';
 import 'package:udemy_flutter/modules/cubit/states.dart';
 import 'package:udemy_flutter/modules/splash_screen/home_screen.dart';
-import 'package:udemy_flutter/services/location_services.dart';
 import 'package:udemy_flutter/shared/local/cache_helper.dart';
 import 'package:udemy_flutter/shared/network/remote/dio_helper.dart';
 
+
+
 class MyHttpOverrides extends HttpOverrides {
   @override
-  HttpClient createHttpClient(SecurityContext context) {
+  HttpClient createHttpClient(SecurityContext? context) {
     return super.createHttpClient(context)
       ..badCertificateCallback =
           (X509Certificate cert, String host, int port) => true;
   }
 }
 
-Future<Void>firbaseMessgingBackgroundHandler(RemoteMessage event)async {
+
+Future<void>firbaseMessgingBackgroundHandler(RemoteMessage event)async {
     // print("dddddddddd");
     // AppCubit().get_notif ('','');
+
     if (event.data.isNotEmpty) {
       CacheHelper.saveData(
           key: 'pickup', value: event.data['picked'].toString());
       CacheHelper.saveData(
           key: 'pickup' + event.data['student_id'],
           value: event.data['picked'].toString());
+      if(event.data['model_name'].toString()=='chat') {
+        CacheHelper.saveData(key: 'new_chat'+event.data['student_id'].toString(), value: true);
+      }
     }
     String title = '';
     String message = '';
-    title = event.notification.title.toString();
-    message = event.notification.body.toString();
+
+    title = event.notification!.title.toString();
+    message = event.notification!.body.toString();
+
+
     // const sou=MethodChannel('somethinguniqueforyou.com/channel_tes');
     // final arg={'id':'1','name':event.notification.title.toString(),"description":event.notification.body.toString()};
     // await sou.invokeMethod('createNotificationChannel',arg);
 
+  // Example: Show a toast message or handle the notification
+  // Fluttertoast.showToast(
+  //     msg: "Notification: $title - $message",
+  //     toastLength: Toast.LENGTH_SHORT,
+  //     gravity: ToastGravity.BOTTOM,
+  //     timeInSecForIosWeb: 1,
+  //     backgroundColor: Colors.grey,
+  //     textColor: Colors.black,
+  //     fontSize: 16.0
+  // );
+}
+
+void requestPermission() async {
+  var status = await Permission.storage.status;
+  if (!status.isGranted) {
+    await Permission.storage.request();
+  }
 }
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await DioHelper.init();
-  await DioHelper1.init();
-  await CacheHelper.init();
-  // await initNotifications();
-  await FlutterDownloader.initialize();
-  await Firebase.initializeApp(
 
-  );
+  try {
+    await CacheHelper.init();
+    await FlutterDownloader.initialize();
+    await Firebase.initializeApp();
+    // FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+    // Initialize plugins that may require permissions
+    await DioHelper.init();
+    await DioHelper1.init();
+    await DioHelperChat.init();
+
+    // Request necessary permissions
+    await Firebase.initializeApp();
+  } catch (e) {
+    print('Initialization error: $e');
+  }
+
+  // await DioHelper.init();
+  // await DioHelper1.init();
+  // await CacheHelper.init();
+  // // await initNotifications();
+  // await FlutterDownloader.initialize();
+
 
    // const platform = const MethodChannel('nl.sobit');
   HttpOverrides.global = MyHttpOverrides();
 
-  // await DioHelper2.init();
   Bloc.observer = MyBlocObserver();
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -175,9 +214,8 @@ Future<void> main() async {
   runApp(Phoenix(child: MyApp()));
 }
 
-
 class MyApp extends StatefulWidget {
-  MyApp({Key key}) : super(key: key);
+  // MyApp({Key key}) : super(key: key);
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -185,10 +223,15 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   int i = 0;
+
+  @override
   void initState() {
 
     super.initState();
+
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -200,11 +243,9 @@ class _MyAppState extends State<MyApp> {
             return Sizer(
                 builder: (context, orientation, deviceType) {
                   return  MaterialApp(
-
                     locale: AppCubit.locale.toString().isEmpty
                         ? Localizations.localeOf(context)
                         : AppCubit.locale,
-
                     debugShowCheckedModeBanner: false,
                     home: HomeScreen(),
                     localizationsDelegates: [
@@ -215,7 +256,6 @@ class _MyAppState extends State<MyApp> {
                       GlobalCupertinoLocalizations.delegate, // 추가
                       GlobalWidgetsLocalizations.delegate,
                     ],
-
                     // locale: _locale,
                     supportedLocales: [
                       Locale("en", ""),

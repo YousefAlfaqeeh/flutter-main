@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:sizer/sizer.dart';
 import 'package:udemy_flutter/localizations.dart';
 import 'package:udemy_flutter/modules/canteen/create_canteen.dart';
+import 'package:udemy_flutter/modules/chat/teachers.dart';
 import 'package:udemy_flutter/modules/cubit/cubit.dart';
 import 'package:udemy_flutter/modules/cubit/states.dart';
 import 'package:udemy_flutter/modules/home/new_home.dart';
@@ -80,7 +82,7 @@ class _General_appState extends State<General_app> {
                                       left: 30, top: 0, right: 30),
                                   child: Image(
                                     image: AssetImage(
-                                        'images/trackware_school.png'),
+                                        AppCubit.trackware_school),
                                     width:
                                         MediaQuery.of(context).size.width / 6,
                                     height:
@@ -196,6 +198,35 @@ class _General_appState extends State<General_app> {
                                       ],
                                     ),
                                   )),
+                              SizedBox(height: 20,),
+
+                              // Container(
+                              //     color: Colors.white,
+                              //     alignment: CacheHelper.getBoolean(key: 'lang')
+                              //         .toString()
+                              //         .contains('ar')
+                              //         ? Alignment.topRight
+                              //         : Alignment.topLeft,
+                              //     padding: EdgeInsets.only(
+                              //         left: 30, top: 0, right: 30),
+                              //     child: InkWell(
+                              //       onTap: () {
+                              //         Navigator.push(
+                              //             context,
+                              //             MaterialPageRoute(
+                              //               builder: (context) => ChatPage(),
+                              //             ));
+                              //       },
+                              //       child: Row(
+                              //         children: [
+                              //           // SvgPicture.asset("images/icons8_info_squared1.svg",color: Color(0xff98aac9),),
+                              //           Icon(Icons.chat_outlined,color:Color(0xff98aac9),size: 8.w, ),
+                              //           SizedBox(width: 20,),
+                              //           Text( "Chat"),
+                              //
+                              //         ],
+                              //       ),
+                              //     )),
                               SizedBox(height: 20,),
                               Container(
                                   color: Colors.white,

@@ -9,15 +9,12 @@ import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:sizer/sizer.dart';
 import 'package:udemy_flutter/localizations.dart';
-import 'package:udemy_flutter/models/absenceRequest.dart';
-import 'package:udemy_flutter/models/kidsList.dart';
 import 'package:udemy_flutter/models/method.dart';
 import 'package:udemy_flutter/models/modelLibrary.dart';
 import 'package:udemy_flutter/modules/cubit/cubit.dart';
 import 'package:udemy_flutter/modules/cubit/states.dart';
 import 'package:udemy_flutter/modules/general/general_app.dart';
 import 'package:udemy_flutter/modules/home/new_home.dart';
-import 'package:udemy_flutter/modules/notification/filter_ab.dart';
 import 'package:udemy_flutter/modules/notification/filter_libary.dart';
 import 'package:udemy_flutter/modules/pickUp/pickup.dart';
 import 'package:udemy_flutter/modules/settings/setting.dart';
@@ -26,6 +23,7 @@ import 'package:udemy_flutter/modules/tracking/tracking.dart';
 import 'package:udemy_flutter/shared/components/customWidget.dart';
 import 'package:udemy_flutter/shared/components/dialog.dart';
 import 'package:udemy_flutter/shared/local/cache_helper.dart';
+import 'package:udemy_flutter/shared/shareWid.dart';
 
 
 class Library extends StatefulWidget {
@@ -174,7 +172,11 @@ class _LibraryState extends State<Library> with SingleTickerProviderStateMixin {
     {
       //
       setState(() {
-        student.add(student_list(i, AppCubit.list_st[i]));
+        MaterialPageRoute navigator=  MaterialPageRoute(
+          builder: (context) =>        Library(std_id: AppCubit.std,std_name: widget.std_name),
+        );
+        student.add(student_list(i,  AppCubit.list_st[i],widget.std_id , navigator,context));
+
       });
 
     }
@@ -195,6 +197,20 @@ class _LibraryState extends State<Library> with SingleTickerProviderStateMixin {
             return WillPopScope(
               onWillPop: ()async {
                 Reset.clear_searhe();
+                if(AppCubit.back_home) {
+                  AppCubit.back_home=false;
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Hiome_Kids()),
+                  );
+                }
+                else {
+                  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => New_Detail()),
+                  );
+                }
                 return false;
               },
               child: Scaffold(
@@ -372,8 +388,6 @@ class _LibraryState extends State<Library> with SingleTickerProviderStateMixin {
 
 
                 ),
-                // bottomNavigationBar:CustomBottomBar("images/icons8_four_squares.svg", "images/icons8_home.svg", "images/picup_empty.svg", "images/icon_feather_search.svg","images/bus.svg", Color(0xff98aac9),  Color(0xff98aac9), Color(0xff98aac9), Color(0xff98aac9), Color(0xff98aac9)),
-
                 appBar: CustomAppBar(student,AppLocalizations.of(context).translate('library') ),
                 body: SingleChildScrollView(
                   child: Container(
@@ -383,12 +397,7 @@ class _LibraryState extends State<Library> with SingleTickerProviderStateMixin {
                       children: [
                         Container(
                           decoration: BoxDecoration(borderRadius: BorderRadius.circular(8),boxShadow: [BoxShadow(color: Colors.grey),BoxShadow(color: Colors.white,spreadRadius: -.5,blurRadius: 2.0)]),
-                        // Card(
-                        //
-                        //   elevation: 2,
-                        //   shape:RoundedRectangleBorder(
-                        //
-                        //       borderRadius: BorderRadius.circular(8),side: BorderSide(color: Color(0xffbbc7db))) ,
+
                           margin: EdgeInsets.symmetric(horizontal: 20,vertical: 10),
 
                           child:
@@ -457,39 +466,14 @@ class _LibraryState extends State<Library> with SingleTickerProviderStateMixin {
                                 MaterialPageRoute(
                                   builder: (context) => Filter_odoo_Libaray(),
                                 ));})
-
-                          // Row(
-                          //   crossAxisAlignment: CrossAxisAlignment.center,
-                          //   mainAxisAlignment: MainAxisAlignment.end,
-                          //   children: [
-                          //     Container(
-                          //       // color: Colors.red,
-                          //       child: Text('Filter', style: TextStyle(
-                          //           fontWeight: FontWeight.normal,
-                          //           fontSize: 13,
-                          //
-                          //           fontFamily: 'Nunito',
-                          //           color: Color(0xff222222))),
-                          //     ),
-                          //     IconButton(onPressed: () {
-                          //
-                          //       Navigator.push(
-                          //           context,
-                          //           MaterialPageRoute(
-                          //             builder: (context) => Filter_odoo_Libaray(),
-                          //           ));
-                          //
-                          //     }, icon:SvgPicture.asset("images/filter11.svg",color:  Color(0xff98aac9),width:20 ,) ,color:  Color(0xff98aac9),),
-                          //   ],
-                          // )
                           ,),
                         //emptyLibrary
                         type=="Request"?AppCubit.requestBook.length>0? Expanded(
 
                           child: ListView.builder(
 
-                            itemBuilder: (context, index) => getContainerDaily(requestBook.length==0?AppCubit.requestBook[index]:requestBook[index]),
-                            itemCount:requestBook.length==0?AppCubit.requestBook.length:requestBook.length,
+                            itemBuilder: (context, index) => getContainerDaily(requestBook.length==0 || !AppCubit.filter?AppCubit.requestBook[index]:requestBook[index]),
+                            itemCount:requestBook.length==0 || !AppCubit.filter?AppCubit.requestBook.length:requestBook.length,
 
                             shrinkWrap: true,
 
@@ -644,13 +628,9 @@ class _LibraryState extends State<Library> with SingleTickerProviderStateMixin {
   {
 
     String day='';
-    // day=absenceRequest.dateDelivered.toString();
-
     DateTime dt1 = DateFormat('dd MMM yyyy').parse(absenceRequest.dateDelivered.toString());
     var formatter = DateFormat.yMMMd('ar_SA');
     day = CacheHelper.getBoolean(key: 'lang').toString().contains('ar')?formatter.format(dt1):absenceRequest.dateDelivered.toString();
-    //absenceRequest.dateReturnedOn.toString()
-    // absenceRequest.dateReturned.toString()
     dt1=DateFormat('dd MMM yyyy').parse(absenceRequest.dateReturnedOn.toString());
     String dateReturnedOn= CacheHelper.getBoolean(key: 'lang').toString().contains('ar')?formatter.format(dt1):absenceRequest.dateReturnedOn.toString();
     dt1=DateFormat('dd MMM yyyy').parse(absenceRequest.dateReturned.toString());
@@ -757,62 +737,6 @@ class _LibraryState extends State<Library> with SingleTickerProviderStateMixin {
 
           ],
         ),
-      ),
-    );
-  }
-  Widget student_list(int ind,Students  listDetail1) {
-    List<Features> listFeatures1=[];
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
-      child: InkWell(
-
-        onTap: () {
-          AppCubit.flag_req=false;
-          AppCubit.stutes_notif_odoo='';
-          AppCubit.school_image=listDetail1.schoolImage.toString();
-
-          listFeatures1.clear();
-          // if(listDetail1.changeLocation=true)
-          // {
-          //
-          //   listFeatures1.add( Features(name:  AppLocalizations.of(context).translate('chang_home_location'), icon: 'https://trackware-schools.s3.eu-central-1.amazonaws.com/flutter_app/Assignments.svg',nameAr: AppLocalizations.of(context).translate('chang_home_location')));
-          //
-          // }
-
-          listDetail1.features!.forEach((element) {
-
-
-            listFeatures1.add(element); });
-
-          AppCubit.get(context).setDetalil(listDetail1.name, listDetail1.studentGrade??"", listDetail1.schoolName, listDetail1.avatar, listDetail1.id.toString(),  listDetail1.schoolLat, listDetail1.schoolId.toString(), listDetail1.schoolLng, listDetail1.pickupRequestDistance.toString(), listFeatures1);
-
-          Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => Library(std_id: AppCubit.std,std_name: widget.std_name)));
-        },
-        child: Row(
-
-            children: [
-
-
-              CircleAvatar(
-                backgroundColor: Colors.transparent ,
-                maxRadius: 20,
-
-
-                backgroundImage: NetworkImage('${listDetail1.avatar}', ),
-
-              ),
-              SizedBox(height: 10,width: 10,),
-
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("${listDetail1.fname}",style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Nunito',fontSize: 9),),
-                  Text("${AppCubit.grade}",style: TextStyle(fontWeight: FontWeight.w500, fontFamily: 'Nunito',fontSize: 9),),
-                ],
-              ),
-            ]),
       ),
     );
   }

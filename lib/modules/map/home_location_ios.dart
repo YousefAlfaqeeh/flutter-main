@@ -248,7 +248,7 @@ class _FRouteState extends State<FRoute> {
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             minimumSize: const Size(110, 40),
-                            primary: Colors.blueAccent,
+                            backgroundColor: Colors.blueAccent,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(
                                 50,
@@ -278,7 +278,7 @@ class _FRouteState extends State<FRoute> {
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             minimumSize: const Size(110, 40),
-                            primary: Colors.blueAccent,
+                            backgroundColor: Colors.blueAccent,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(
                                 50,

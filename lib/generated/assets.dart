@@ -137,6 +137,7 @@ class Assets {
   static const String imagesIcons8Delete12 = 'images/icons8_delete12.svg';
   static const String imagesIcons8DownloadFromCloud = 'images/icons8_download_from_cloud.svg';
   static const String imagesIcons8EnglishToArabic = 'images/icons8_english_to_arabic.svg';
+  static const String imagesIcons8File = 'images/icons8_file.svg';
   static const String imagesIcons8FireExit = 'images/icons8_fire_exit.svg';
   static const String imagesIcons8FourSquares = 'images/icons8_four_squares.svg';
   static const String imagesIcons8FourSquaresFull = 'images/icons8_four_squares_full.svg';
@@ -155,6 +156,7 @@ class Assets {
   static const String imagesIcons8Secure = 'images/icons8_secure.svg';
   static const String imagesIcons8TechnicalSupport = 'images/icons8_technical_support.svg';
   static const String imagesIcons8VegetarianFood = 'images/icons8_vegetarian_food.svg';
+  static const String imagesIcons8VideoFile = 'images/icons8_video_file.svg';
   static const String imagesIconsIllness = 'images/icons_illness.svg';
   static const String imagesImage32111zon = 'images/Image321_11zon.png';
   static const String imagesImgAbsent = 'images/img_absent.png';
@@ -192,6 +194,7 @@ class Assets {
   static const String imagesRounded = 'images/rounded.svg';
   static const String imagesSchoolMonochromatic = 'images/school_Monochromatic.png';
   static const String imagesSettingsFull = 'images/settings_full.svg';
+  static const String imagesSpeaker = 'images/speaker.png';
   static const String imagesStudentNew = 'images/student_new.png';
   static const String imagesStudents = 'images/students.svg';
   static const String imagesTableSolid = 'images/table_solid.svg';
@@ -200,6 +203,7 @@ class Assets {
   static const String imagesTimesSolid = 'images/times_solid.svg';
   static const String imagesTrackwareSchool = 'images/trackware_school.png';
   static const String imagesUnnamed = 'images/unnamed.png';
+  static const String imagesWaveSound = 'images/wave_sound.png';
   static const String imagesWorksheets = 'images/worksheets.png';
   static const String langAnimationLkz4jtzc = 'assets/lang/animation_lkz4jtzc.json';
   static const String langAnm = 'assets/lang/anm.json';
@@ -219,6 +223,7 @@ class Assets {
   static const String langSchoolBus = 'assets/lang/school_bus.json';
   static const String langSeedRoundCup = 'assets/lang/seedRound_Cup.json';
   static const String langSentSuccessfully = 'assets/lang/sent_successfully.json';
+  static const String langSound = 'assets/lang/sound.json';
   static const String langTrackwarelogo = 'assets/lang/trackwarelogo.json';
 
 }

@@ -20,6 +20,7 @@ import 'package:udemy_flutter/shared/components/customWidget.dart';
 import 'package:udemy_flutter/shared/components/dialog.dart';
 import 'package:udemy_flutter/shared/components/widget.dart';
 import 'package:udemy_flutter/shared/local/cache_helper.dart';
+import 'package:udemy_flutter/shared/shareWid.dart';
 
 
 class New_Badges extends StatefulWidget {
@@ -51,7 +52,11 @@ class _New_BadgesState extends State<New_Badges> {
     {
     //
     setState(() {
-      student.add(student_list(i, AppCubit.list_st[i]));
+      MaterialPageRoute navigator=  MaterialPageRoute(
+        builder: (context) => New_Badges( std_id: AppCubit.list_st[i].id.toString(),std_name:  AppCubit.list_st[i].name.toString(),),
+      );
+      student.add(student_list(i,  AppCubit.list_st[i],widget.std_id , navigator,context));
+
     });
 
     }
@@ -78,90 +83,6 @@ class _New_BadgesState extends State<New_Badges> {
           child: Scaffold(
             bottomNavigationBar:CustomBottomBar("images/icons8_four_squares.svg", "images/icons8_home.svg", "images/picup_empty.svg", "images/icon_feather_search.svg","images/bus.svg", Color(0xff98aac9),  Color(0xff98aac9), Color(0xff98aac9), Color(0xff98aac9), Color(0xff98aac9)),
 
-            // appBar: AppBar(
-            //   toolbarHeight: 20.w,
-            //   backgroundColor:Colors.white,
-            //   leadingWidth: double.infinity/4,
-            //   leading: Padding(
-            //     padding:EdgeInsets.only(left: 20,top: 20,bottom: 10,right: 0),
-            //     // padding:  EdgeInsets.symmetric(vertical: 20,horizontal: 40),
-            //     child: Container(
-            //
-            //       child: Row(
-            //         // mainAxisAlignment: MainAxisAlignment.center,
-            //         children: [
-            //           IconButton(
-            //             onPressed: () {
-            //               if(AppCubit.back_home) {
-            //                 AppCubit.back_home=false;
-            //                 Navigator.push(
-            //                   context,
-            //                   MaterialPageRoute(builder: (context) => Hiome_Kids()),
-            //                 );
-            //               }
-            //               else {
-            //                 Navigator.push(
-            //                   context,
-            //                   MaterialPageRoute(builder: (context) => New_Detail()),
-            //                 );
-            //               }
-            //             },
-            //             icon:SvgPicture.asset("images/chevron_left_solid.svg",color:Color(0xff98aac9) ),
-            //           ),
-            //           Container(
-            //
-            //             // child: Text("ufuufufufufufu"),
-            //             child: Text('Badge',style: TextStyle(color:Color(0xff3c92d0),fontSize: 28,fontWeight: FontWeight.bold  )),
-            //
-            //           ),
-            //
-            //         ],
-            //       ),
-            //     ),
-            //   ),
-            //   actions: [
-            //     Padding(
-            //       padding:EdgeInsets.only(left: 10,top: 20,bottom: 10,right: 20),
-            //       // padding:  EdgeInsets.symmetric(vertical: 20,horizontal: 40),
-            //       child: Row(
-            //         children: [
-            //           // Container(
-            //           //
-            //           //   width: MediaQuery.of(context).size.width/8,
-            //           //   decoration: BoxDecoration(borderRadius: BorderRadius.circular(60),color:  Colors.transparent ,
-            //           //       image:DecorationImage(image: NetworkImage("${AppCubit.image}"))),
-            //           // ),
-            //           CircleAvatar(
-            //             backgroundColor: Colors.transparent ,
-            //             maxRadius: 6.w,
-            //             backgroundImage: NetworkImage('${AppCubit.image}', ),
-            //           ),
-            //           PopupMenuButton(offset: Offset(0,AppBar().preferredSize.height),
-            //             shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
-            //             child:Icon(Icons.keyboard_arrow_down,size: 8.w,color: Color(0xff98aac9)) ,itemBuilder: (context) => [
-            //
-            //               PopupMenuItem(child:
-            //               Container(
-            //                 width:35.w,
-            //                 child: Column(
-            //                   children:student,
-            //
-            //                 ),
-            //               ))
-            //             ],)
-            //         ],
-            //       ),
-            //     ),
-            //   ],
-            //
-            //
-            //
-            //
-            //
-            //
-            //
-            //
-            // ),
             appBar: CustomAppBar(student,AppLocalizations.of(context).translate('badge') ),
             body:Container(
               width: double.infinity,
@@ -191,8 +112,8 @@ class _New_BadgesState extends State<New_Badges> {
                           child: ListView.separated(
                             primary: false,
                             shrinkWrap: true,
-                            itemBuilder: (context, index) => badges(index,AppCubit.list_Badges[index]),
-                            itemCount: AppCubit.list_Badges.length,
+                            itemBuilder: (context, index) =>index< AppCubit.list_Badges.length?badges(index,AppCubit.list_Badges[index]):SizedBox(height: 200,),
+                            itemCount: AppCubit.list_Badges.length+1,
                             separatorBuilder: (context, index) {
                               if(index==0){
                                 return Padding(
@@ -389,8 +310,7 @@ class _New_BadgesState extends State<New_Badges> {
                         : 0),
                     width: MediaQuery.of(context).size.width,
                     height:  MediaQuery.of(context).size.height/4,
-                    // padding: EdgeInsets.symmetric(horizontal: 20,vertical: 10),
-                    // padding: EdgeInsets.only(left: 20,top: 20),
+
                     child: ClipRRect(
                         borderRadius: BorderRadius.circular(20),
                         child: Image(image:NetworkImage(result.image.toString())))):
@@ -604,11 +524,6 @@ class _New_BadgesState extends State<New_Badges> {
                       child: Padding(
                         padding:
                         EdgeInsets.only(bottom: 10.0, right:  CacheHelper.getBoolean(key: 'lang').toString().contains('ar')?MediaQuery.of(context).size.width/4:15,left: CacheHelper.getBoolean(key: 'lang').toString().contains('ar')?15:MediaQuery.of(context).size.width/4),
-                        // EdgeInsets.only(bottom: 10.0,left: CacheHelper.getBoolean(key: 'lang').toString().contains('ar')
-                        //                     ? MediaQuery.of(context).size.width/4
-                        //                     : 15,right: CacheHelper.getBoolean(key: 'lang').toString().contains('ar')
-                        //                     ? 15
-                        //                     : MediaQuery.of(context).size.width/4),
                         child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -701,87 +616,4 @@ class _New_BadgesState extends State<New_Badges> {
         ));
    }
 
-  Widget student_list(int ind,Students  listDetail1) {
-
-
-
-    List<Features> listFeatures1=[];
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
-      child: InkWell(
-
-        onTap: () {
-
-
-          listFeatures1.clear();
-          AppCubit.school_image=listDetail1.schoolImage.toString();
-          // if(listDetail1.changeLocation=true)
-          // {
-          //
-          //   listFeatures1.add( Features(name:  AppLocalizations.of(context).translate('chang_home_location'), icon: 'https://trackware-schools.s3.eu-central-1.amazonaws.com/flutter_app/Assignments.svg',nameAr: AppLocalizations.of(context).translate('chang_home_location')));
-          //
-          // }
-
-          listDetail1.features!.forEach((element) {
-
-
-            listFeatures1.add(element); });
-
-          AppCubit.get(context).setDetalil(listDetail1.name, listDetail1.studentGrade??"", listDetail1.schoolName, listDetail1.avatar, listDetail1.id.toString(),  listDetail1.schoolLat, listDetail1.schoolId.toString(), listDetail1.schoolLng, listDetail1.pickupRequestDistance.toString(), listFeatures1);
-
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => New_Badges( std_id: listDetail1.id.toString(),std_name:  listDetail1.name.toString(),),),
-          );
-        },
-        child: Row(
-
-            children: [
-
-
-              CircleAvatar(
-                backgroundColor: Colors.transparent ,
-                maxRadius: MediaQuery.of(context).size.width/12,
-
-
-                backgroundImage: NetworkImage('${listDetail1.avatar}', ),
-
-              ),
-              SizedBox(height: 10,width: 10,),
-
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("${listDetail1.fname}",style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Nunito',fontSize: 9),),
-                  Text("${AppCubit.grade}",style: TextStyle(fontWeight: FontWeight.w500, fontFamily: 'Nunito',fontSize: 9),),
-                ],
-              ),
-            ]),
-      ),
-    );
-  }
-
-  // Widget emptyBadges()
-  // {
-  //   return Container(
-  //     alignment: Alignment.center,
-  //
-  //     child:Padding(
-  //       padding: EdgeInsets.symmetric(vertical: 50),
-  //       child: Column(children: [
-  //         // CustomLotte('assets/lang/seedRound_Cup.json'),
-  //         Image(image: AssetImage("images/no_Badges.png") ,width: 400,height: 239,),
-  //         SizedBox(height: 8,),
-  //         Text("No Badges ",style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Nunito',fontSize: 22,color: Colors.black)),
-  //         SizedBox(height: 14,),
-  //         InkWell(onTap: () {
-  //           Navigator.push(
-  //             context,
-  //             MaterialPageRoute(builder: (context) => New_Detail()),
-  //           );
-  //         },
-  //             child: Text("Return to profile",style: TextStyle(fontWeight: FontWeight.normal, fontFamily: 'Nunito',fontSize: 16,color: Color(0xff3c92d0),decoration: TextDecoration.underline)))
-  //       ]),
-  //     ) ,);
-  // }
 }

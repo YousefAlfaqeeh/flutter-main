@@ -1,10 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_svg/svg.dart';
@@ -12,11 +14,13 @@ import 'package:gallery_saver/gallery_saver.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:udemy_flutter/models/method.dart';
 import 'package:udemy_flutter/models/modelEvent.dart';
 import 'package:udemy_flutter/modules/cubit/cubit.dart';
 import 'package:udemy_flutter/modules/cubit/states.dart';
 import 'package:udemy_flutter/modules/home/new_home.dart';
 import 'package:udemy_flutter/modules/modulesOdoo/allEvents.dart';
+import 'package:udemy_flutter/modules/modulesOdoo/custm_pdf.dart';
 import 'package:udemy_flutter/modules/webview/webview_login.dart';
 import 'package:udemy_flutter/shared/components/customWidget.dart';
 import 'package:udemy_flutter/shared/end_points.dart';
@@ -52,72 +56,92 @@ class _FormEventsState extends State<FormEvents> {
   Widget build(BuildContext context) {
     return BlocProvider(create: (context) => AppCubit()..getFormEvent(widget.std_id,AppCubit.std),
       child: BlocConsumer<AppCubit,AppStates>(builder: (context, state) {
-        return Scaffold(
-          bottomNavigationBar:CustomBottomBar("images/icons8_four_squares.svg", "images/icons8_home.svg", "images/picup_empty.svg", "images/icon_feather_search.svg","images/bus.svg", Color(0xff98aac9),  Color(0xff98aac9), Color(0xff98aac9), Color(0xff98aac9), Color(0xff98aac9)),
-
-          body:Container(
-            color: Color(0xfff6f8fb),
-            child: Column(
-              children: [
-                Container(
-                  width: double.infinity,
-                  height:
-                  135,
-                  color: Colors.blue[700],
-                  child:
-                  Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(top: 50,left: 20),
-
-                        child: Row(children: [
-                          IconButton(
-                            onPressed: () {
-                              // Navigator.pop(context);
-                if(AppCubit.back_home) {
-          AppCubit.back_home=false;
-          Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => Hiome_Kids()),
-          );
-          }
+        return WillPopScope(
+          onWillPop: ()async {
+            Reset.clear_searhe();
+            if(AppCubit.back_home) {
+              AppCubit.back_home=false;
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Hiome_Kids()),
+              );
+            }
             else {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => AllEvents(std_id:AppCubit.std)),);
-                  Navigator.pop(context);
-                }
-                            },
-                            icon: Container(
-                                width: 13.58,
-                                height: 22.37,
-                                padding: EdgeInsetsDirectional.only(end: 2),
-                                child: SvgPicture.asset("images/chevron_left_solid.svg")),
-                          ),
-                          Container(padding: EdgeInsets.all(3),child: SvgPicture.asset("images/calendar_day_solid.svg"),),
-                          Container(
-                              padding: EdgeInsets.symmetric(horizontal: 20),
-                              alignment: Alignment.centerLeft, child: Text("Events",style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Nunito',fontSize: 25,color: Colors.white),)),
-                        ],),
-                      ),
+              SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AllEvents(std_id: widget.std_id)),
+              );
+            }
+            return false;
+          },
+          child: Scaffold(
+            bottomNavigationBar:CustomBottomBar("images/icons8_four_squares.svg", "images/icons8_home.svg", "images/picup_empty.svg", "images/icon_feather_search.svg","images/bus.svg", Color(0xff98aac9),  Color(0xff98aac9), Color(0xff98aac9), Color(0xff98aac9), Color(0xff98aac9)),
+
+            body:Container(
+              color: Color(0xfff6f8fb),
+              child: Column(
+                children: [
+                  Container(
+                    width: double.infinity,
+                    height:
+                    135,
+                    color: Colors.blue[700],
+                    child:
+                    Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(top: 50,left: 20),
+
+                          child: Row(children: [
+                            IconButton(
+                              onPressed: () {
+                                // Navigator.pop(context);
+                  if(AppCubit.back_home) {
+            AppCubit.back_home=false;
+            Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => Hiome_Kids()),
+            );
+            }
+              else {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => AllEvents(std_id:AppCubit.std)),);
+                    Navigator.pop(context);
+                  }
+                              },
+                              icon: Container(
+                                  width: 13.58,
+                                  height: 22.37,
+                                  padding: EdgeInsetsDirectional.only(end: 2),
+                                  child: SvgPicture.asset("images/chevron_left_solid.svg")),
+                            ),
+                            Container(padding: EdgeInsets.all(3),child: SvgPicture.asset("images/calendar_day_solid.svg"),),
+                            Container(
+                                padding: EdgeInsets.symmetric(horizontal: 20),
+                                alignment: Alignment.centerLeft, child: Text("Events",style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Nunito',fontSize: 25,color: Colors.white),)),
+                          ],),
+                        ),
 
 
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                // ),
+                  // ),
 
-                Expanded(
-                  child:
-                  ListView.builder(
-                    itemBuilder: (context, index) => formEvent(AppCubit.list_Event[index]),
-                    itemCount: AppCubit.list_Event.length,
-                    shrinkWrap: true,
+                  Expanded(
+                    child:
+                    ListView.builder(
+                      itemBuilder: (context, index) => formEvent(AppCubit.list_Event[index]),
+                      itemCount: AppCubit.list_Event.length,
+                      shrinkWrap: true,
 
+                    ),
                   ),
-                ),
 
-              ],
+                ],
+              ),
             ),
           ),
         );
@@ -757,9 +781,9 @@ class _FormEventsState extends State<FormEvents> {
 
   }
   // method get  Permission save  any file
-  Future<bool> _requestWrritePermission()
-  async { await Permission.storage.request();
-  return await Permission.storage.request().isGranted;
+  Future<bool> _requestWrritePermission() async {
+    await Permission.storage.request();
+    return await Permission.storage.request().isGranted;
   }
 //  method download any file and save
   Future<void> downloadFile(String url,String fileName)
@@ -769,14 +793,24 @@ class _FormEventsState extends State<FormEvents> {
 
     if(Platform.isIOS )
     {
-      if(await canLaunchUrl(url1))
-      {
+      if(await canLaunchUrl(url1)) {
         // print(CacheHelper.getBoolean(key: 'sessionId'));
         // await launchUrl(url);
-        await launch(url.toString(), headers: {
-          "X-Openerp-Session-Id":
-          CacheHelper.getBoolean(key: 'sessionId')
-        } );
+        if (url.toString().contains('.pdf')) {
+
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => PDF(url: url, name: fileName,)),
+            );
+
+        }
+        else {
+          await launch(url.toString(), headers: {
+            "X-Openerp-Session-Id":
+            CacheHelper.getBoolean(key: 'sessionId')
+          });
+        }
       }
       // FlutterDownloader.enqueue(url: url, savedDir: directory!.path ,showNotification: true,openFileFromNotification: true);
       // await launch(url);
@@ -808,6 +842,10 @@ class _FormEventsState extends State<FormEvents> {
       }
       //
       directory!.create();
+      var splitted = fileName.split('.');
+      if(splitted.length>=2)
+        fileName =splitted[0].toString().split(' ')[0].toString()+'.'+splitted[1].toString();
+
       await dio.download(
         url, directory.path + fileName, onReceiveProgress: (count, total) {
         // print(count/total*100);
@@ -832,14 +870,22 @@ class _FormEventsState extends State<FormEvents> {
         //   await launch(url);
         // }
         // else {
+        if(url.contains('.pdf'))
+        {
 
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) =>PDF(url: url,name: fileName,) ),
+          );
+        }
+        else{
           OpenFile.open(directory!.path + fileName).then((value) {
 
             
           }).onError((
               error, stackTrace) {
           });
-        // }
+        }
       }).catchError((onError){
 
 

@@ -54,7 +54,7 @@ class _Create_CanteenState extends State<Create_Canteen> {
     // TODO: implement initState
 
     if (AppCubit.spending.length>0) {
-      print(AppCubit.spending[0].canteenSpending);
+
       if (AppCubit.spending[0].canteenSpending == '0' ||
           AppCubit.spending[0].canteenSpending == 'None') {
         flg = true;
@@ -63,7 +63,6 @@ class _Create_CanteenState extends State<Create_Canteen> {
           ..getAllAllergies(AppCubit.std);
       }
       else {
-        print("jjjjjjjj");
         setState(() {
           spending = AppCubit.spending;
           foodAllegies = AppCubit.foodAllegies;
@@ -116,7 +115,7 @@ class _Create_CanteenState extends State<Create_Canteen> {
       child: BlocConsumer<AppCubit, AppStates>(
         listener: (context, state) {
           index_co=0;
-          // shwoDialog();
+
         },
         builder: (context, state) {
           FirebaseMessaging.onMessageOpenedApp.listen((event) {});
@@ -165,7 +164,7 @@ class _Create_CanteenState extends State<Create_Canteen> {
                                         left: 30, top: 0, right: 30),
                                     child: Image(
                                       image: AssetImage(
-                                          'images/trackware_school.png'),
+                                          AppCubit.trackware_school),
                                       width:
                                           MediaQuery.of(context).size.width / 6,
                                       height:
@@ -372,15 +371,13 @@ class _Create_CanteenState extends State<Create_Canteen> {
         child: Padding(
           padding: EdgeInsets.symmetric(vertical: 10),
           child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            // CustomLotte('assets/lang/seedRound_Cup.json'),
+            Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(AppCubit.student_name,
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontFamily: 'Nunito',
                     fontSize: 14,
                     color: Colors.black)),
-
             Column(
               children: [
                 Card(
@@ -630,7 +627,7 @@ class _Create_CanteenState extends State<Create_Canteen> {
             SizedBox(
               height: 10,
             ),
-                ListView.builder(
+            ListView.builder(
                   itemCount: schduleMeals.length+1,
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
@@ -649,16 +646,7 @@ class _Create_CanteenState extends State<Create_Canteen> {
   }
 
   Widget list_schedule(SchduleMeals schduleMeals_1,int index) {
-    // int index_col=0;
-    // if (index_co>3){
-    //   index_co=0;
-    // }
-    // else
-    //   {
-    //
-    //     index_col=index_co;
-    //     index_co+=1;
-    //   }
+
 
     
     return Card(

@@ -1,17 +1,24 @@
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart';
+import 'package:sizer/sizer.dart';
 import 'package:udemy_flutter/localizations.dart';
 import 'package:udemy_flutter/models/kidsList.dart';
+import 'package:udemy_flutter/modules/chat/teachers.dart';
 import 'package:udemy_flutter/modules/cubit/cubit.dart';
 import 'package:udemy_flutter/modules/cubit/states.dart';
+import 'package:udemy_flutter/modules/home/new_home.dart';
 import 'package:udemy_flutter/modules/map/home_location.dart';
 import 'package:udemy_flutter/modules/modulesOdoo/Ecanteen.dart';
 import 'package:udemy_flutter/modules/modulesOdoo/absence.dart';
+import 'package:udemy_flutter/modules/modulesOdoo/allMark.dart';
 import 'package:udemy_flutter/modules/modulesOdoo/allWeekPlans.dart';
 import 'package:udemy_flutter/modules/modulesOdoo/allWorksheets.dart';
 import 'package:udemy_flutter/modules/modulesOdoo/assignments.dart';
@@ -45,6 +52,17 @@ class _New_DetailState extends State<New_Detail> {
     const number = '0799807675'; //set the number here
     bool? res = await FlutterPhoneDirectCaller.callNumber(number);
   }
+bool flag=false;
+  @override
+  void initState() {
+    // TODO: implement initState
+    // print(CacheHelper.getBoolean(key: 'new_chat'+AppCubit.std));
+    if(CacheHelper.getBoolean(key: 'new_chat'+AppCubit.std).toString()!='null')
+      {
+        flag=CacheHelper.getBoolean(key: 'new_chat'+AppCubit.std);
+      }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,597 +71,629 @@ class _New_DetailState extends State<New_Detail> {
         create: (context) =>  AppCubit(),
         child: BlocConsumer<AppCubit,AppStates>(builder: (context, state) {
           return
-            Scaffold(
+            WillPopScope(
+              onWillPop: () async{
+                SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Hiome_Kids(),
+                    ));
+                return false;
+              },
+              child: Scaffold(
 
-              backgroundColor: Color(0xfff5f7fb),
-              bottomNavigationBar:CustomBottomBar("images/icons8_four_squares.svg", "images/icons8_home.svg", "images/picup_empty.svg", "images/icon_feather_search.svg","images/bus.svg", Color(0xff98aac9),  Color(0xff98aac9), Color(0xff98aac9), Color(0xff98aac9), Color(0xff98aac9)),
+                backgroundColor: Color(0xfff5f7fb),
+                bottomNavigationBar:CustomBottomBar("images/icons8_four_squares.svg", "images/icons8_home.svg", "images/picup_empty.svg", "images/icon_feather_search.svg","images/bus.svg", Color(0xff98aac9),  Color(0xff98aac9), Color(0xff98aac9), Color(0xff98aac9), Color(0xff98aac9)),
 // appBar: AppBar(systemOverlayStyle: SystemUiOverlayStyle.light),
 
-              // bottomNavigationBar:
-              // BottomAppBar(
-              //   shape: CircularNotchedRectangle(),
-              //
-              //
-              //   notchMargin: 20,
-              //   child: Container(
-              //     height: 60,
-              //     child: Row(
-              //       mainAxisAlignment: MainAxisAlignment.spaceAround,
-              //       children: [
-              //         Row(
-              //           crossAxisAlignment: CrossAxisAlignment.center,
-              //           children: [
-              //
-              //             Padding(
-              //               padding: const EdgeInsets.only(top: 15.0),
-              //               child: MaterialButton(
-              //                 minWidth: 40,
-              //                 onPressed: () {
-              //                   Navigator.push(
-              //                       context,
-              //                       MaterialPageRoute(
-              //                         builder: (context) => Setting(),
-              //                       ));
-              //                 },
-              //                 child: Column(crossAxisAlignment: CrossAxisAlignment.center,
-              //                   children: [
-              //                     SvgPicture.asset("images/icon_feather_search.svg",color: Colors.grey,)
-              //                   ],
-              //                 ),
-              //               ),
-              //             )
-              //           ],
-              //         ),
-              //         Row(
-              //           crossAxisAlignment: CrossAxisAlignment.center,
-              //           children: [
-              //
-              //             Padding(
-              //               padding: const EdgeInsets.only(top: 15.0),
-              //               child: MaterialButton(
-              //                 minWidth: 40,
-              //                 onPressed: () {
-              //                   Navigator.push(
-              //                       context,
-              //                       MaterialPageRoute(
-              //                         builder: (context) => Tracking(),
-              //                       ));
-              //                 },
-              //                 child: Column(
-              //                   crossAxisAlignment: CrossAxisAlignment.center,
-              //                   children: [
-              //                     SvgPicture.asset("images/bus.svg",color: Colors.grey,)
-              //
-              //                   ],
-              //                 ),
-              //               ),
-              //             )
-              //           ],
-              //         ),
-              //         Row(
-              //           crossAxisAlignment: CrossAxisAlignment.center,
-              //           children: [
-              //
-              //             Padding(
-              //               padding: const EdgeInsets.only(top: 15.0),
-              //               child: MaterialButton(
-              //                 minWidth: 40,
-              //                 onPressed: () {
-              //                   Navigator.push(
-              //                       context,
-              //                       MaterialPageRoute(
-              //                         builder: (context) => Hiome_Kids(),
-              //                       ));
-              //                 },
-              //                 child: Column(crossAxisAlignment: CrossAxisAlignment.center,
-              //                   children: [
-              //                     SvgPicture.asset("images/icons8_home.svg",color:  Colors.grey,)
-              //                   ],
-              //                 ),
-              //               ),
-              //             )
-              //           ],
-              //         ),
-              //         Row(
-              //           crossAxisAlignment: CrossAxisAlignment.center,
-              //           children: [
-              //
-              //             Padding(
-              //               padding: const EdgeInsets.only(top: 15.0),
-              //               child: MaterialButton(
-              //                 minWidth: 40,
-              //                 onPressed: () {
-              //                   Navigator.push(
-              //                       context,
-              //                       MaterialPageRoute(
-              //                         builder: (context) => PickUp_Request(),
-              //                       ));
-              //                 },
-              //                 child: Column(
-              //                   crossAxisAlignment: CrossAxisAlignment.center,
-              //                   children: [
-              //                     SvgPicture.asset("images/pick_up_by_parent.svg",color: Colors.grey,)
-              //
-              //                   ],
-              //                 ),
-              //               ),
-              //             )
-              //           ],
-              //         ),
-              //         Row(
-              //           crossAxisAlignment: CrossAxisAlignment.center,
-              //           children: [
-              //
-              //             Padding(
-              //               padding: const EdgeInsets.only(top: 15.0),
-              //               child: MaterialButton(
-              //                 minWidth: 40,
-              //                 onPressed: () {
-              //                   Navigator.push(
-              //                       context,
-              //                       MaterialPageRoute(
-              //                         builder: (context) => General_app(),
-              //                       ));
-              //                 },
-              //                 child: Column(
-              //                   crossAxisAlignment: CrossAxisAlignment.center,
-              //                   children: [
-              //                     SvgPicture.asset("images/icons8_four_squares.svg",color: Colors.grey,)
-              //
-              //                   ],
-              //                 ),
-              //               ),
-              //             )
-              //           ],
-              //         ),
-              //       ],
-              //
-              //     ),
-              //
-              //
-              //   ),
-              //
-              //
-              // ),
+                // bottomNavigationBar:
+                // BottomAppBar(
+                //   shape: CircularNotchedRectangle(),
+                //
+                //
+                //   notchMargin: 20,
+                //   child: Container(
+                //     height: 60,
+                //     child: Row(
+                //       mainAxisAlignment: MainAxisAlignment.spaceAround,
+                //       children: [
+                //         Row(
+                //           crossAxisAlignment: CrossAxisAlignment.center,
+                //           children: [
+                //
+                //             Padding(
+                //               padding: const EdgeInsets.only(top: 15.0),
+                //               child: MaterialButton(
+                //                 minWidth: 40,
+                //                 onPressed: () {
+                //                   Navigator.push(
+                //                       context,
+                //                       MaterialPageRoute(
+                //                         builder: (context) => Setting(),
+                //                       ));
+                //                 },
+                //                 child: Column(crossAxisAlignment: CrossAxisAlignment.center,
+                //                   children: [
+                //                     SvgPicture.asset("images/icon_feather_search.svg",color: Colors.grey,)
+                //                   ],
+                //                 ),
+                //               ),
+                //             )
+                //           ],
+                //         ),
+                //         Row(
+                //           crossAxisAlignment: CrossAxisAlignment.center,
+                //           children: [
+                //
+                //             Padding(
+                //               padding: const EdgeInsets.only(top: 15.0),
+                //               child: MaterialButton(
+                //                 minWidth: 40,
+                //                 onPressed: () {
+                //                   Navigator.push(
+                //                       context,
+                //                       MaterialPageRoute(
+                //                         builder: (context) => Tracking(),
+                //                       ));
+                //                 },
+                //                 child: Column(
+                //                   crossAxisAlignment: CrossAxisAlignment.center,
+                //                   children: [
+                //                     SvgPicture.asset("images/bus.svg",color: Colors.grey,)
+                //
+                //                   ],
+                //                 ),
+                //               ),
+                //             )
+                //           ],
+                //         ),
+                //         Row(
+                //           crossAxisAlignment: CrossAxisAlignment.center,
+                //           children: [
+                //
+                //             Padding(
+                //               padding: const EdgeInsets.only(top: 15.0),
+                //               child: MaterialButton(
+                //                 minWidth: 40,
+                //                 onPressed: () {
+                //                   Navigator.push(
+                //                       context,
+                //                       MaterialPageRoute(
+                //                         builder: (context) => Hiome_Kids(),
+                //                       ));
+                //                 },
+                //                 child: Column(crossAxisAlignment: CrossAxisAlignment.center,
+                //                   children: [
+                //                     SvgPicture.asset("images/icons8_home.svg",color:  Colors.grey,)
+                //                   ],
+                //                 ),
+                //               ),
+                //             )
+                //           ],
+                //         ),
+                //         Row(
+                //           crossAxisAlignment: CrossAxisAlignment.center,
+                //           children: [
+                //
+                //             Padding(
+                //               padding: const EdgeInsets.only(top: 15.0),
+                //               child: MaterialButton(
+                //                 minWidth: 40,
+                //                 onPressed: () {
+                //                   Navigator.push(
+                //                       context,
+                //                       MaterialPageRoute(
+                //                         builder: (context) => PickUp_Request(),
+                //                       ));
+                //                 },
+                //                 child: Column(
+                //                   crossAxisAlignment: CrossAxisAlignment.center,
+                //                   children: [
+                //                     SvgPicture.asset("images/pick_up_by_parent.svg",color: Colors.grey,)
+                //
+                //                   ],
+                //                 ),
+                //               ),
+                //             )
+                //           ],
+                //         ),
+                //         Row(
+                //           crossAxisAlignment: CrossAxisAlignment.center,
+                //           children: [
+                //
+                //             Padding(
+                //               padding: const EdgeInsets.only(top: 15.0),
+                //               child: MaterialButton(
+                //                 minWidth: 40,
+                //                 onPressed: () {
+                //                   Navigator.push(
+                //                       context,
+                //                       MaterialPageRoute(
+                //                         builder: (context) => General_app(),
+                //                       ));
+                //                 },
+                //                 child: Column(
+                //                   crossAxisAlignment: CrossAxisAlignment.center,
+                //                   children: [
+                //                     SvgPicture.asset("images/icons8_four_squares.svg",color: Colors.grey,)
+                //
+                //                   ],
+                //                 ),
+                //               ),
+                //             )
+                //           ],
+                //         ),
+                //       ],
+                //
+                //     ),
+                //
+                //
+                //   ),
+                //
+                //
+                // ),
 
 
-              body:Container(
-                // width: double.infinity,
+                body:Container(
+                  // width: double.infinity,
 
-                // height: double.infinity,
-                decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topRight,
-                      end: Alignment.bottomLeft,
-                      colors: [
-                        Color(0xff3c92d0),
-                        Color(0xff3c92d0),
-                      ],
-                    )),
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      Container(
-                          width: double.infinity,
-                          // height: MediaQuery.of(context).size.height/3.5,
-                          // color: Colors.grey[200],
-                          child: Column(
-                            // mainAxisAlignment: MainAxisAlignment.end,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                padding: EdgeInsets.only(left: 30,top: 35,right: 30),
-                                // width: double.infinity,
-                                // color: Colors.red,
-                                // alignment: Alignment.topLeft,
-                                child: CircleAvatar(
-                                    radius: 25,
-                                    backgroundImage: NetworkImage("${AppCubit.school_image}")),
-                              ),
-                              Row(
-                                children: [
-                                  Padding(
-                                    padding: EdgeInsets.only(left: 30,right: 15,top:  30),
-                                    child: Container(
+                  // height: double.infinity,
+                  decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topRight,
+                        end: Alignment.bottomLeft,
+                        colors: [
+                          Color(0xff3c92d0),
+                          Color(0xff3c92d0),
+                        ],
+                      )),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Container(
+                            width: double.infinity,
+                            // height: MediaQuery.of(context).size.height/3.5,
+                            // color: Colors.grey[200],
+                            child: Column(
+                              // mainAxisAlignment: MainAxisAlignment.end,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Container(
+                                      padding: EdgeInsets.only(left: 30,top: 35,right: 30),
+                                      // width: double.infinity,
                                       // color: Colors.red,
-                                      height: 80,
-                                      width: 80,
+                                      // alignment: Alignment.topLeft,
                                       child: CircleAvatar(
-                                        // radius: 30,
-                                          backgroundImage: NetworkImage("${AppCubit.image}")),
+                                          radius: 25,
+                                          backgroundImage: NetworkImage("${AppCubit.school_image}")),
                                     ),
-                                  ),
-                                  Expanded(
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Padding(
-                                          padding:  EdgeInsets.only(top:  MediaQuery.of(context).size.height/25),
-                                          child: Text("${AppCubit.name}",style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold,  fontFamily: 'Nunito', color: Colors.white),),
-                                        ),
-                                        Padding(
-                                          padding: EdgeInsets.only(top: 0),
-                                          child: Text( "${AppCubit.grade}"+" "+AppLocalizations.of(context).translate('grade'),style: TextStyle(fontSize: 11,fontWeight: FontWeight.w700,  fontFamily: 'Poppins', color:  Color(0xfff88c0b)),),
-                                        ),
+                                    Expanded(child: SizedBox()),
+                                    Container(
+                                      padding: EdgeInsets.only(left: 30,top: 35,right: 30),
+                                      child: InkWell(
+                                        onTap: () {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) => ChatPage(std_id: AppCubit.std),
+                                              ));
+                                        },
+                                        child: Row(
+                                          children: [
 
-                                      ],
+                                            Icon(flag?Icons.mark_chat_unread_outlined:Icons.chat_bubble_outline,color:Colors.white,size: 8.w, ),
+                                          // Icons.mark_chat_unread_outlined
+
+                                          ],
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                  // Padding(
-                                  //   padding: EdgeInsets.only(left: 15,right: 15,top:  30),
-                                  //   child: Container(
-                                  //     // color: Colors.red,
-                                  //     height: 50,
-                                  //     width: 50,
-                                  //
-                                  //     decoration: BoxDecoration(borderRadius: BorderRadius.circular(40),color: Colors.white24),
-                                  //     child:IconButton(onPressed: () {
-                                  //
-                                  //       _tagRead();
-                                  //       showDialog(
-                                  //           context: context,
-                                  //           builder: (context) => AlertDialog(shape:  RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                                  //             content: Container(   height: 35.h ,
-                                  //                 child: SingleChildScrollView(
-                                  //                   child: Column(
-                                  //                       crossAxisAlignment: CrossAxisAlignment.center,
-                                  //                       children: [
-                                  //
-                                  //                         Container(
-                                  //
-                                  //
-                                  //                           height: 30.h ,
-                                  //                           // width: 120,
-                                  //                           child:Lottie.asset('assets/lang/animation_lkz4jtzc.json'),
-                                  //                           // Lottie.asset('assets/lang/high.json'),
-                                  //                         ),
-                                  //                       ]),
-                                  //                 )
-                                  //             ),
-                                  //
-                                  //           )
-                                  //       );
-                                  //
-                                  //
-                                  //     }, icon: Icon(Icons.nfc,color: Colors.white,)),
-                                  //   ),
-                                  // ),
-                                ],
-                              ),
-                            ],
-                          )
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Container(
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsets.only(left: 30,right: 15,top:  30),
+                                      child: Container(
+                                        // color: Colors.red,
+                                        height: 80,
+                                        width: 80,
+                                        child: CircleAvatar(
+                                          // radius: 30,
+                                            backgroundImage: NetworkImage("${AppCubit.image}")),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Padding(
+                                            padding:  EdgeInsets.only(top:  MediaQuery.of(context).size.height/25),
+                                            child: Text("${AppCubit.name}",style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold,  fontFamily: 'Nunito', color: Colors.white),),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.only(top: 0),
+                                            child: Text( "${AppCubit.grade}"+" "+AppLocalizations.of(context).translate('grade'),style: TextStyle(fontSize: 11,fontWeight: FontWeight.w700,  fontFamily: 'Poppins', color:  Color(0xfff88c0b)),),
+                                          ),
 
-                        decoration: BoxDecoration(
-                            color: Color(0xfff5f7fb),
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(MediaQuery.of(context).size.width/7.2),
-                              topRight: Radius.circular(MediaQuery.of(context).size.width/7.2),
-                            )),
-                        child:  Container(
-                          padding: EdgeInsets.only(left: 15,right: 15),
-
-                          child: GridView.count(
-                            shrinkWrap: true,
-
-                            // childAspectRatio: 1,
-                            mainAxisSpacing: 2,
-                            crossAxisSpacing: 2,
-                            // childAspectRatio: .85,
-                            physics: NeverScrollableScrollPhysics(),
-                            crossAxisCount: 3,
-
-                            // padding:
-                            // EdgeInsets.only(top: MediaQuery.of(context).size.height/21.1, left: MediaQuery.of(context).size.width/24, right: MediaQuery.of(context).size.width/24, bottom: MediaQuery.of(context).size.height/61.5),
-                            children: List.generate(AppCubit.listdetail.length, (index) {
-                              return profil_student(AppCubit.listdetail[index]);
-                            }),
-                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    // Padding(
+                                    //   padding: EdgeInsets.only(left: 15,right: 15,top:  30),
+                                    //   child: Container(
+                                    //     // color: Colors.red,
+                                    //     height: 50,
+                                    //     width: 50,
+                                    //
+                                    //     decoration: BoxDecoration(borderRadius: BorderRadius.circular(40),color: Colors.white24),
+                                    //     child:IconButton(onPressed: () {
+                                    //
+                                    //       _tagRead();
+                                    //       showDialog(
+                                    //           context: context,
+                                    //           builder: (context) => AlertDialog(shape:  RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                                    //             content: Container(   height: 35.h ,
+                                    //                 child: SingleChildScrollView(
+                                    //                   child: Column(
+                                    //                       crossAxisAlignment: CrossAxisAlignment.center,
+                                    //                       children: [
+                                    //
+                                    //                         Container(
+                                    //
+                                    //
+                                    //                           height: 30.h ,
+                                    //                           // width: 120,
+                                    //                           child:Lottie.asset('assets/lang/animation_lkz4jtzc.json'),
+                                    //                           // Lottie.asset('assets/lang/high.json'),
+                                    //                         ),
+                                    //                       ]),
+                                    //                 )
+                                    //             ),
+                                    //
+                                    //           )
+                                    //       );
+                                    //
+                                    //
+                                    //     }, icon: Icon(Icons.nfc,color: Colors.white,)),
+                                    //   ),
+                                    // ),
+                                  ],
+                                ),
+                              ],
+                            )
                         ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+                              color: Color(0xfff5f7fb),
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(MediaQuery.of(context).size.width/7.2),
+                                topRight: Radius.circular(MediaQuery.of(context).size.width/7.2),
+                              )),
+                          child:  Container(
+                            padding: EdgeInsets.only(left: 15,right: 15),
+                            child: GridView.count(
+                              shrinkWrap: true,
+                              // childAspectRatio: 1,
+                              mainAxisSpacing: 2,
+                              crossAxisSpacing: 2,
+                              // childAspectRatio: .85,
+                              physics: NeverScrollableScrollPhysics(),
+                              crossAxisCount: 3,
+                              // padding:
+                              // EdgeInsets.only(top: MediaQuery.of(context).size.height/21.1, left: MediaQuery.of(context).size.width/24, right: MediaQuery.of(context).size.width/24, bottom: MediaQuery.of(context).size.height/61.5),
+                              children: List.generate(AppCubit.listdetail.length, (index) {
+                                return profil_student(AppCubit.listdetail[index]);
+                              }),
+                            ),
+                          ),
 
-                      ),
-                    ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              )
-              // FutureBuilder(
-              //   future: NfcManager.instance.isAvailable(),builder: (context, snapshot) =>   snapshot.data != true? Container(
-              //   // width: double.infinity,
-              //
-              //   // height: double.infinity,
-              //   decoration: const BoxDecoration(
-              //       gradient: LinearGradient(
-              //         begin: Alignment.topRight,
-              //         end: Alignment.bottomLeft,
-              //         colors: [
-              //           Color(0xff3c92d0),
-              //           Color(0xff3c92d0),
-              //         ],
-              //       )),
-              //   child: SingleChildScrollView(
-              //     child: Column(
-              //       children: [
-              //         Container(
-              //             width: double.infinity,
-              //             // height: MediaQuery.of(context).size.height/3.5,
-              //             // color: Colors.grey[200],
-              //             child: Column(
-              //               // mainAxisAlignment: MainAxisAlignment.end,
-              //               crossAxisAlignment: CrossAxisAlignment.start,
-              //               children: [
-              //                 Container(
-              //                   padding: EdgeInsets.only(left: 30,top: 35,right: 30),
-              //                   // width: double.infinity,
-              //                   // color: Colors.red,
-              //                   // alignment: Alignment.topLeft,
-              //                   child: CircleAvatar(
-              //                       radius: 25,
-              //                       backgroundImage: NetworkImage("${AppCubit.school_image}")),
-              //                 ),
-              //                 Row(
-              //                   children: [
-              //                     Padding(
-              //                       padding: EdgeInsets.only(left: 30,right: 15,top:  30),
-              //                       child: Container(
-              //                         // color: Colors.red,
-              //                         height: 80,
-              //                         width: 80,
-              //                         child: CircleAvatar(
-              //                           // radius: 30,
-              //                             backgroundImage: NetworkImage("${AppCubit.image}")),
-              //                       ),
-              //                     ),
-              //                     Expanded(
-              //                       child: Column(
-              //                         mainAxisAlignment: MainAxisAlignment.start,
-              //                         crossAxisAlignment: CrossAxisAlignment.start,
-              //                         children: [
-              //                           Padding(
-              //                             padding:  EdgeInsets.only(top:  MediaQuery.of(context).size.height/25),
-              //                             child: Text("${AppCubit.name}",style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold,  fontFamily: 'Nunito', color: Colors.white),),
-              //                           ),
-              //                           Padding(
-              //                             padding: EdgeInsets.only(top: 0),
-              //                             child: Text( "${AppCubit.grade}"+" "+AppLocalizations.of(context).translate('grade'),style: TextStyle(fontSize: 11,fontWeight: FontWeight.w700,  fontFamily: 'Poppins', color:  Color(0xfff88c0b)),),
-              //                           ),
-              //
-              //                         ],
-              //                       ),
-              //                     ),
-              //                     // Padding(
-              //                     //   padding: EdgeInsets.only(left: 15,right: 15,top:  30),
-              //                     //   child: Container(
-              //                     //     // color: Colors.red,
-              //                     //     height: 50,
-              //                     //     width: 50,
-              //                     //
-              //                     //     decoration: BoxDecoration(borderRadius: BorderRadius.circular(40),color: Colors.white24),
-              //                     //     child:IconButton(onPressed: () {
-              //                     //
-              //                     //       _tagRead();
-              //                     //       showDialog(
-              //                     //           context: context,
-              //                     //           builder: (context) => AlertDialog(shape:  RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-              //                     //             content: Container(   height: 35.h ,
-              //                     //                 child: SingleChildScrollView(
-              //                     //                   child: Column(
-              //                     //                       crossAxisAlignment: CrossAxisAlignment.center,
-              //                     //                       children: [
-              //                     //
-              //                     //                         Container(
-              //                     //
-              //                     //
-              //                     //                           height: 30.h ,
-              //                     //                           // width: 120,
-              //                     //                           child:Lottie.asset('assets/lang/animation_lkz4jtzc.json'),
-              //                     //                           // Lottie.asset('assets/lang/high.json'),
-              //                     //                         ),
-              //                     //                       ]),
-              //                     //                 )
-              //                     //             ),
-              //                     //
-              //                     //           )
-              //                     //       );
-              //                     //
-              //                     //
-              //                     //     }, icon: Icon(Icons.nfc,color: Colors.white,)),
-              //                     //   ),
-              //                     // ),
-              //                   ],
-              //                 ),
-              //               ],
-              //             )
-              //         ),
-              //         SizedBox(
-              //           height: 20,
-              //         ),
-              //         Container(
-              //
-              //           decoration: BoxDecoration(
-              //               color: Color(0xfff5f7fb),
-              //               borderRadius: BorderRadius.only(
-              //                 topLeft: Radius.circular(MediaQuery.of(context).size.width/7.2),
-              //                 topRight: Radius.circular(MediaQuery.of(context).size.width/7.2),
-              //               )),
-              //           child:  Container(
-              //             padding: EdgeInsets.only(left: 15,right: 15),
-              //
-              //             child: GridView.count(
-              //               shrinkWrap: true,
-              //
-              //               // childAspectRatio: 1,
-              //               mainAxisSpacing: 2,
-              //               crossAxisSpacing: 2,
-              //               // childAspectRatio: .85,
-              //               physics: NeverScrollableScrollPhysics(),
-              //               crossAxisCount: 3,
-              //
-              //               // padding:
-              //               // EdgeInsets.only(top: MediaQuery.of(context).size.height/21.1, left: MediaQuery.of(context).size.width/24, right: MediaQuery.of(context).size.width/24, bottom: MediaQuery.of(context).size.height/61.5),
-              //               children: List.generate(AppCubit.listdetail.length, (index) {
-              //                 return profil_student(AppCubit.listdetail[index]);
-              //               }),
-              //             ),
-              //           ),
-              //
-              //         ),
-              //       ],
-              //     ),
-              //   ),
-              // ):
-              // Container(
-              //   // width: double.infinity,
-              //   // height: double.infinity,
-              //   decoration: const BoxDecoration(
-              //       gradient: LinearGradient(
-              //         begin: Alignment.topRight,
-              //         end: Alignment.bottomLeft,
-              //         colors: [
-              //           Color(0xff3c92d0),
-              //           Color(0xff3c92d0),
-              //         ],
-              //       )),
-              //   child: SingleChildScrollView(
-              //     child: Column(
-              //       children: [
-              //         Container(
-              //             width: double.infinity,
-              //             // height: MediaQuery.of(context).size.height/3.5,
-              //             // color: Colors.grey[200],
-              //             child: Column(
-              //               // mainAxisAlignment: MainAxisAlignment.end,
-              //               crossAxisAlignment: CrossAxisAlignment.start,
-              //               children: [
-              //                 Container(
-              //                   padding: EdgeInsets.only(left: 30,top: 35,right: 30),
-              //                   // width: double.infinity,
-              //                   // color: Colors.red,
-              //                   // alignment: Alignment.topLeft,
-              //                   child: CircleAvatar(
-              //                       radius: 25,
-              //                       backgroundImage: NetworkImage("${AppCubit.school_image}")),
-              //                 ),
-              //                 Row(
-              //                   children: [
-              //                     Padding(
-              //                       padding: EdgeInsets.only(left: 30,right: 15,top:  30),
-              //                       child: Container(
-              //                         // color: Colors.red,
-              //                         height: 80,
-              //                         width: 80,
-              //                         child: CircleAvatar(
-              //                           // radius: 30,
-              //                             backgroundImage: NetworkImage("${AppCubit.image}")),
-              //                       ),
-              //                     ),
-              //                     Expanded(
-              //                       child: Column(
-              //                         mainAxisAlignment: MainAxisAlignment.start,
-              //                         crossAxisAlignment: CrossAxisAlignment.start,
-              //                         children: [
-              //                           Padding(
-              //                             padding:  EdgeInsets.only(top:  MediaQuery.of(context).size.height/25),
-              //                             child: Text("${AppCubit.name}",style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold,  fontFamily: 'Nunito', color: Colors.white),),
-              //                           ),
-              //                           Padding(
-              //                             padding: EdgeInsets.only(top: 0),
-              //                             child: Text( "${AppCubit.grade}"+" "+AppLocalizations.of(context).translate('grade'),style: TextStyle(fontSize: 11,fontWeight: FontWeight.w700,  fontFamily: 'Poppins', color:  Color(0xfff88c0b)),),
-              //                           ),
-              //
-              //                         ],
-              //                       ),
-              //                     ),
-              //                     Visibility(visible: false,
-              //                       child: Padding(
-              //                         padding: EdgeInsets.only(left: 15,right: 15,top:  30),
-              //                         child: Container(
-              //                           // color: Colors.red,
-              //                           height: 50,
-              //                           width: 50,
-              //
-              //                           decoration: BoxDecoration(borderRadius: BorderRadius.circular(40),color: Colors.white24),
-              //                           child:IconButton(onPressed: () {
-              //
-              //                             _tagRead();
-              //                             showDialog(
-              //                                 context: context,
-              //                                 builder: (context) => AlertDialog(shape:  RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-              //                                   content: Container(   height: 35.h ,
-              //                                       child: SingleChildScrollView(
-              //                                         child: Column(
-              //                                             crossAxisAlignment: CrossAxisAlignment.center,
-              //                                             children: [
-              //
-              //                                               Container(
-              //
-              //
-              //                                                 height: 30.h ,
-              //                                                 // width: 120,
-              //                                                 child:Lottie.asset('assets/lang/animation_lkz4jtzc.json'),
-              //                                                 // Lottie.asset('assets/lang/high.json'),
-              //                                               ),
-              //                                             ]),
-              //                                       )
-              //                                   ),
-              //
-              //                                 )
-              //                             );
-              //
-              //
-              //                           }, icon: Icon(Icons.nfc,color: Colors.white,)),
-              //                         ),
-              //                       ),
-              //                     ),
-              //                   ],
-              //                 ),
-              //               ],
-              //             )
-              //         ),
-              //         SizedBox(
-              //           height: 20,
-              //         ),
-              //         Container(
-              //
-              //           decoration: BoxDecoration(
-              //               color: Color(0xfff5f7fb),
-              //               borderRadius: BorderRadius.only(
-              //                 topLeft: Radius.circular(MediaQuery.of(context).size.width/7.2),
-              //                 topRight: Radius.circular(MediaQuery.of(context).size.width/7.2),
-              //               )),
-              //           child:  Container(
-              //             padding: EdgeInsets.only(left: 15,right: 15),
-              //
-              //             child: GridView.count(
-              //               shrinkWrap: true,
-              //
-              //               // childAspectRatio: 1,
-              //               mainAxisSpacing: 2,
-              //               crossAxisSpacing: 2,
-              //               // childAspectRatio: .85,
-              //               physics: NeverScrollableScrollPhysics(),
-              //               crossAxisCount: 3,
-              //
-              //               // padding:
-              //               // EdgeInsets.only(top: MediaQuery.of(context).size.height/21.1, left: MediaQuery.of(context).size.width/24, right: MediaQuery.of(context).size.width/24, bottom: MediaQuery.of(context).size.height/61.5),
-              //               children: List.generate(AppCubit.listdetail.length, (index) {
-              //                 return profil_student(AppCubit.listdetail[index]);
-              //               }),
-              //             ),
-              //           ),
-              //
-              //         ),
-              //       ],
-              //     ),
-              //   ),
-              // ),)
+                )
+                // FutureBuilder(
+                //   future: NfcManager.instance.isAvailable(),builder: (context, snapshot) =>   snapshot.data != true? Container(
+                //   // width: double.infinity,
+                //
+                //   // height: double.infinity,
+                //   decoration: const BoxDecoration(
+                //       gradient: LinearGradient(
+                //         begin: Alignment.topRight,
+                //         end: Alignment.bottomLeft,
+                //         colors: [
+                //           Color(0xff3c92d0),
+                //           Color(0xff3c92d0),
+                //         ],
+                //       )),
+                //   child: SingleChildScrollView(
+                //     child: Column(
+                //       children: [
+                //         Container(
+                //             width: double.infinity,
+                //             // height: MediaQuery.of(context).size.height/3.5,
+                //             // color: Colors.grey[200],
+                //             child: Column(
+                //               // mainAxisAlignment: MainAxisAlignment.end,
+                //               crossAxisAlignment: CrossAxisAlignment.start,
+                //               children: [
+                //                 Container(
+                //                   padding: EdgeInsets.only(left: 30,top: 35,right: 30),
+                //                   // width: double.infinity,
+                //                   // color: Colors.red,
+                //                   // alignment: Alignment.topLeft,
+                //                   child: CircleAvatar(
+                //                       radius: 25,
+                //                       backgroundImage: NetworkImage("${AppCubit.school_image}")),
+                //                 ),
+                //                 Row(
+                //                   children: [
+                //                     Padding(
+                //                       padding: EdgeInsets.only(left: 30,right: 15,top:  30),
+                //                       child: Container(
+                //                         // color: Colors.red,
+                //                         height: 80,
+                //                         width: 80,
+                //                         child: CircleAvatar(
+                //                           // radius: 30,
+                //                             backgroundImage: NetworkImage("${AppCubit.image}")),
+                //                       ),
+                //                     ),
+                //                     Expanded(
+                //                       child: Column(
+                //                         mainAxisAlignment: MainAxisAlignment.start,
+                //                         crossAxisAlignment: CrossAxisAlignment.start,
+                //                         children: [
+                //                           Padding(
+                //                             padding:  EdgeInsets.only(top:  MediaQuery.of(context).size.height/25),
+                //                             child: Text("${AppCubit.name}",style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold,  fontFamily: 'Nunito', color: Colors.white),),
+                //                           ),
+                //                           Padding(
+                //                             padding: EdgeInsets.only(top: 0),
+                //                             child: Text( "${AppCubit.grade}"+" "+AppLocalizations.of(context).translate('grade'),style: TextStyle(fontSize: 11,fontWeight: FontWeight.w700,  fontFamily: 'Poppins', color:  Color(0xfff88c0b)),),
+                //                           ),
+                //
+                //                         ],
+                //                       ),
+                //                     ),
+                //                     // Padding(
+                //                     //   padding: EdgeInsets.only(left: 15,right: 15,top:  30),
+                //                     //   child: Container(
+                //                     //     // color: Colors.red,
+                //                     //     height: 50,
+                //                     //     width: 50,
+                //                     //
+                //                     //     decoration: BoxDecoration(borderRadius: BorderRadius.circular(40),color: Colors.white24),
+                //                     //     child:IconButton(onPressed: () {
+                //                     //
+                //                     //       _tagRead();
+                //                     //       showDialog(
+                //                     //           context: context,
+                //                     //           builder: (context) => AlertDialog(shape:  RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                //                     //             content: Container(   height: 35.h ,
+                //                     //                 child: SingleChildScrollView(
+                //                     //                   child: Column(
+                //                     //                       crossAxisAlignment: CrossAxisAlignment.center,
+                //                     //                       children: [
+                //                     //
+                //                     //                         Container(
+                //                     //
+                //                     //
+                //                     //                           height: 30.h ,
+                //                     //                           // width: 120,
+                //                     //                           child:Lottie.asset('assets/lang/animation_lkz4jtzc.json'),
+                //                     //                           // Lottie.asset('assets/lang/high.json'),
+                //                     //                         ),
+                //                     //                       ]),
+                //                     //                 )
+                //                     //             ),
+                //                     //
+                //                     //           )
+                //                     //       );
+                //                     //
+                //                     //
+                //                     //     }, icon: Icon(Icons.nfc,color: Colors.white,)),
+                //                     //   ),
+                //                     // ),
+                //                   ],
+                //                 ),
+                //               ],
+                //             )
+                //         ),
+                //         SizedBox(
+                //           height: 20,
+                //         ),
+                //         Container(
+                //
+                //           decoration: BoxDecoration(
+                //               color: Color(0xfff5f7fb),
+                //               borderRadius: BorderRadius.only(
+                //                 topLeft: Radius.circular(MediaQuery.of(context).size.width/7.2),
+                //                 topRight: Radius.circular(MediaQuery.of(context).size.width/7.2),
+                //               )),
+                //           child:  Container(
+                //             padding: EdgeInsets.only(left: 15,right: 15),
+                //
+                //             child: GridView.count(
+                //               shrinkWrap: true,
+                //
+                //               // childAspectRatio: 1,
+                //               mainAxisSpacing: 2,
+                //               crossAxisSpacing: 2,
+                //               // childAspectRatio: .85,
+                //               physics: NeverScrollableScrollPhysics(),
+                //               crossAxisCount: 3,
+                //
+                //               // padding:
+                //               // EdgeInsets.only(top: MediaQuery.of(context).size.height/21.1, left: MediaQuery.of(context).size.width/24, right: MediaQuery.of(context).size.width/24, bottom: MediaQuery.of(context).size.height/61.5),
+                //               children: List.generate(AppCubit.listdetail.length, (index) {
+                //                 return profil_student(AppCubit.listdetail[index]);
+                //               }),
+                //             ),
+                //           ),
+                //
+                //         ),
+                //       ],
+                //     ),
+                //   ),
+                // ):
+                // Container(
+                //   // width: double.infinity,
+                //   // height: double.infinity,
+                //   decoration: const BoxDecoration(
+                //       gradient: LinearGradient(
+                //         begin: Alignment.topRight,
+                //         end: Alignment.bottomLeft,
+                //         colors: [
+                //           Color(0xff3c92d0),
+                //           Color(0xff3c92d0),
+                //         ],
+                //       )),
+                //   child: SingleChildScrollView(
+                //     child: Column(
+                //       children: [
+                //         Container(
+                //             width: double.infinity,
+                //             // height: MediaQuery.of(context).size.height/3.5,
+                //             // color: Colors.grey[200],
+                //             child: Column(
+                //               // mainAxisAlignment: MainAxisAlignment.end,
+                //               crossAxisAlignment: CrossAxisAlignment.start,
+                //               children: [
+                //                 Container(
+                //                   padding: EdgeInsets.only(left: 30,top: 35,right: 30),
+                //                   // width: double.infinity,
+                //                   // color: Colors.red,
+                //                   // alignment: Alignment.topLeft,
+                //                   child: CircleAvatar(
+                //                       radius: 25,
+                //                       backgroundImage: NetworkImage("${AppCubit.school_image}")),
+                //                 ),
+                //                 Row(
+                //                   children: [
+                //                     Padding(
+                //                       padding: EdgeInsets.only(left: 30,right: 15,top:  30),
+                //                       child: Container(
+                //                         // color: Colors.red,
+                //                         height: 80,
+                //                         width: 80,
+                //                         child: CircleAvatar(
+                //                           // radius: 30,
+                //                             backgroundImage: NetworkImage("${AppCubit.image}")),
+                //                       ),
+                //                     ),
+                //                     Expanded(
+                //                       child: Column(
+                //                         mainAxisAlignment: MainAxisAlignment.start,
+                //                         crossAxisAlignment: CrossAxisAlignment.start,
+                //                         children: [
+                //                           Padding(
+                //                             padding:  EdgeInsets.only(top:  MediaQuery.of(context).size.height/25),
+                //                             child: Text("${AppCubit.name}",style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold,  fontFamily: 'Nunito', color: Colors.white),),
+                //                           ),
+                //                           Padding(
+                //                             padding: EdgeInsets.only(top: 0),
+                //                             child: Text( "${AppCubit.grade}"+" "+AppLocalizations.of(context).translate('grade'),style: TextStyle(fontSize: 11,fontWeight: FontWeight.w700,  fontFamily: 'Poppins', color:  Color(0xfff88c0b)),),
+                //                           ),
+                //
+                //                         ],
+                //                       ),
+                //                     ),
+                //                     Visibility(visible: false,
+                //                       child: Padding(
+                //                         padding: EdgeInsets.only(left: 15,right: 15,top:  30),
+                //                         child: Container(
+                //                           // color: Colors.red,
+                //                           height: 50,
+                //                           width: 50,
+                //
+                //                           decoration: BoxDecoration(borderRadius: BorderRadius.circular(40),color: Colors.white24),
+                //                           child:IconButton(onPressed: () {
+                //
+                //                             _tagRead();
+                //                             showDialog(
+                //                                 context: context,
+                //                                 builder: (context) => AlertDialog(shape:  RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                //                                   content: Container(   height: 35.h ,
+                //                                       child: SingleChildScrollView(
+                //                                         child: Column(
+                //                                             crossAxisAlignment: CrossAxisAlignment.center,
+                //                                             children: [
+                //
+                //                                               Container(
+                //
+                //
+                //                                                 height: 30.h ,
+                //                                                 // width: 120,
+                //                                                 child:Lottie.asset('assets/lang/animation_lkz4jtzc.json'),
+                //                                                 // Lottie.asset('assets/lang/high.json'),
+                //                                               ),
+                //                                             ]),
+                //                                       )
+                //                                   ),
+                //
+                //                                 )
+                //                             );
+                //
+                //
+                //                           }, icon: Icon(Icons.nfc,color: Colors.white,)),
+                //                         ),
+                //                       ),
+                //                     ),
+                //                   ],
+                //                 ),
+                //               ],
+                //             )
+                //         ),
+                //         SizedBox(
+                //           height: 20,
+                //         ),
+                //         Container(
+                //
+                //           decoration: BoxDecoration(
+                //               color: Color(0xfff5f7fb),
+                //               borderRadius: BorderRadius.only(
+                //                 topLeft: Radius.circular(MediaQuery.of(context).size.width/7.2),
+                //                 topRight: Radius.circular(MediaQuery.of(context).size.width/7.2),
+                //               )),
+                //           child:  Container(
+                //             padding: EdgeInsets.only(left: 15,right: 15),
+                //
+                //             child: GridView.count(
+                //               shrinkWrap: true,
+                //
+                //               // childAspectRatio: 1,
+                //               mainAxisSpacing: 2,
+                //               crossAxisSpacing: 2,
+                //               // childAspectRatio: .85,
+                //               physics: NeverScrollableScrollPhysics(),
+                //               crossAxisCount: 3,
+                //
+                //               // padding:
+                //               // EdgeInsets.only(top: MediaQuery.of(context).size.height/21.1, left: MediaQuery.of(context).size.width/24, right: MediaQuery.of(context).size.width/24, bottom: MediaQuery.of(context).size.height/61.5),
+                //               children: List.generate(AppCubit.listdetail.length, (index) {
+                //                 return profil_student(AppCubit.listdetail[index]);
+                //               }),
+                //             ),
+                //           ),
+                //
+                //         ),
+                //       ],
+                //     ),
+                //   ),
+                // ),)
 
 
 
+              ),
             );
         },
           listener: (context, state) {
@@ -667,15 +717,37 @@ class _New_DetailState extends State<New_Detail> {
       child: InkWell(
         onTap: () {
           // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
+          listDetail.new_add=false;
+
           profile_achtion(listDetail);
         },
         child: Padding(
-          padding:  EdgeInsets.only(top: MediaQuery.of(context).size.width/15),
+          padding:  EdgeInsets.only(top: MediaQuery.of(context).size.width/25),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
+              Container(
+                height: 10,
+                padding:  CacheHelper.getBoolean(key: 'lang').toString().contains('ar')?EdgeInsets.only(left: MediaQuery.of(context).size.width/30):EdgeInsets.only(right: MediaQuery.of(context).size.width/30) ,
+                alignment: CacheHelper.getBoolean(key: 'lang').toString().contains('ar')? Alignment.topLeft:Alignment.topRight,
+                width: double.infinity,
+                // color: Colors.red,
+                child: Container(
+
+                  decoration: BoxDecoration(shape: BoxShape.circle,color:listDetail.new_add!? Colors.green:Colors.white),
+                  height: 10,
+                  width: 10,
+
+                ),
+              ),
               // Image(image:  NetworkImage('${listDetail.icon}'),width: 50,height: 50,),
               //Timetable
+              listDetail.icon_svg.toString()=="mark_yousef"?
+                  SvgPicture.asset(
+                    "images/icons8_diploma_50.svg"
+                      ,color:  Color(0xff3c92d0),width:20 ,
+          height: MediaQuery.of(context).size.width/12,):
+
 
               SvgPicture.network('${listDetail.icon_svg}',color:  Color(0xff3c92d0),width:20 ,
               height: MediaQuery.of(context).size.width/12,),
@@ -686,7 +758,7 @@ class _New_DetailState extends State<New_Detail> {
                     CacheHelper.getBoolean(key: 'lang').toString().contains('ar')?'${listDetail.nameAr}':'${listDetail.name}',
                   style: TextStyle(
                       fontWeight: FontWeight.bold, fontFamily: 'Nunito',
-                      fontSize: 12),
+                      fontSize: 10),
                 ),
               ),
 
@@ -752,8 +824,21 @@ class _New_DetailState extends State<New_Detail> {
     }
     else if (listDetail1.name == AppLocalizations.of(context).translate('pick_up'))
     {
-      LocationData? _myLocation = await LoctionService().currentLocation();
-
+      // LocationData? _myLocation = await LoctionService().currentLocation();
+      double? currentLocation_lat;
+      double? currentLocation_longitude;
+      if(Platform.isAndroid)
+      {
+        Position? _myLocation = await LoctionService().currentLocationAnd();
+        currentLocation_lat = _myLocation?.latitude;
+        currentLocation_longitude = _myLocation?.longitude;
+      }
+      else
+      {
+        LocationData? _myLocation = await LoctionService().currentLocation();
+        currentLocation_lat = _myLocation?.latitude;
+        currentLocation_longitude = _myLocation?.longitude;
+      }
       // print(_myLocation);
 
       var distance = AppCubit.distance;
@@ -769,7 +854,7 @@ class _New_DetailState extends State<New_Detail> {
             var lon = AppCubit.school_lng;
 
             if (calculateDistance( double.parse(lat??"0"), double.parse(lon??"0"),
-                _myLocation?.latitude, _myLocation?.longitude) <
+                currentLocation_lat,currentLocation_longitude) <
                 double.parse(distance!)) {
               var response=await  DioHelper.postData(url:Pre_Arrive , data:{
                 'school_id':AppCubit.school_id.toString(),
@@ -920,6 +1005,14 @@ class _New_DetailState extends State<New_Detail> {
             context,
             MaterialPageRoute(
               builder: (context) => New_Badges( std_id: AppCubit.std,std_name:  AppCubit.name,),
+            ));
+      }
+      else if(listDetail1.url.toString().contains("Marks"))
+      {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => All_mark( std_id: AppCubit.std,image:listDetail1.icon_svg.toString()=='mark_yousef'? "" :listDetail1.icon_svg.toString(),),
             ));
       }
       else{

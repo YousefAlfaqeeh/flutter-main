@@ -1,10 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:udemy_flutter/models/method.dart';
 import 'package:udemy_flutter/models/modelClinic.dart';
 import 'package:udemy_flutter/modules/cubit/cubit.dart';
 import 'package:udemy_flutter/modules/cubit/states.dart';
+import 'package:udemy_flutter/modules/home/new_home.dart';
 import 'package:udemy_flutter/modules/studet_details/new_detail.dart';
 import 'package:udemy_flutter/shared/components/customWidget.dart';
 
@@ -28,88 +31,108 @@ class _ClinicState extends State<Clinic> {
   Widget build(BuildContext context) {
     return BlocProvider(create: (context) => AppCubit()..getClinic(widget.std_id),
     child: BlocConsumer<AppCubit,AppStates>(builder: (context, state) {
-      return Scaffold(
-        body:Container(
+      return WillPopScope(
+        onWillPop: ()async {
+          Reset.clear_searhe();
+          if(AppCubit.back_home) {
+            AppCubit.back_home=false;
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => Hiome_Kids()),
+            );
+          }
+          else {
+            SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => New_Detail()),
+            );
+          }
+          return false;
+        },
+        child: Scaffold(
+          body:Container(
 
-          child: Column(
-            children: [
-              Container(
-                width: double.infinity,
-                color: Colors.blue[700],
+            child: Column(
+              children: [
+                Container(
+                  width: double.infinity,
+                  color: Colors.blue[700],
 
-                child:
-                Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(top: 50,left: 20),
+                  child:
+                  Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 50,left: 20),
 
-                      child: Row(children: [
-                        IconButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          icon: Container(
-                              width: 13.58,
-                              height: 22.37,
-                              padding: EdgeInsetsDirectional.only(end: 3),
-                              child: SvgPicture.asset("images/chevron_left_solid.svg")),
-                        ),
-                        Container(padding: EdgeInsets.all(3),child: SvgPicture.asset("images/clinic.svg"),),
-                        Container(
-                            padding: EdgeInsets.symmetric(horizontal: 20),
-                            alignment: Alignment.centerLeft, child: Text("Clinic",style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Nunito',fontSize: 25,color: Colors.white),)),
-                      ],),
-                    ),
+                        child: Row(children: [
+                          IconButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            icon: Container(
+                                width: 13.58,
+                                height: 22.37,
+                                padding: EdgeInsetsDirectional.only(end: 3),
+                                child: SvgPicture.asset("images/chevron_left_solid.svg")),
+                          ),
+                          Container(padding: EdgeInsets.all(3),child: SvgPicture.asset("images/clinic.svg"),),
+                          Container(
+                              padding: EdgeInsets.symmetric(horizontal: 20),
+                              alignment: Alignment.centerLeft, child: Text("Clinic",style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Nunito',fontSize: 25,color: Colors.white),)),
+                        ],),
+                      ),
 
-                    Container(
-                        padding: EdgeInsets.only(top: 20,bottom: 20),
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: 30),
-                        child: TextFormField(
+                      Container(
+                          padding: EdgeInsets.only(top: 20,bottom: 20),
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 30),
+                          child: TextFormField(
 
-                          decoration: InputDecoration(
+                            decoration: InputDecoration(
 
-                              filled: true,
-                              fillColor: Colors.white,
-                              prefixIcon: const Icon(Icons.search,size: 35),
+                                filled: true,
+                                fillColor: Colors.white,
+                                prefixIcon: const Icon(Icons.search,size: 35),
 
-                              enabledBorder: OutlineInputBorder(
-                                  borderSide: const BorderSide(
-                                      color: Colors.white),
-                                  borderRadius:
-                                  BorderRadius.circular(15)),
-                              border: OutlineInputBorder(
-                                  borderSide: const BorderSide(
-                                      color: Colors.white),
-                                  borderRadius:
-                                  BorderRadius.circular(15))),
+                                enabledBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(
+                                        color: Colors.white),
+                                    borderRadius:
+                                    BorderRadius.circular(15)),
+                                border: OutlineInputBorder(
+                                    borderSide: const BorderSide(
+                                        color: Colors.white),
+                                    borderRadius:
+                                    BorderRadius.circular(15))),
 
 
-                        )),
+                          )),
 
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              // ),
-              AppCubit.list_clinic.length!=0
-             ? Expanded(
-                child:
-                ListView.separated(
-                  itemBuilder: (context, index) => clinic(AppCubit.list_clinic[index]),
-                  itemCount: AppCubit.list_clinic.length,
-                  separatorBuilder: (context, index) {
-                    return Container(
+                // ),
+                AppCubit.list_clinic.length!=0
+               ? Expanded(
+                  child:
+                  ListView.separated(
+                    itemBuilder: (context, index) =>index<AppCubit.list_clinic.length ?clinic(AppCubit.list_clinic[index]):SizedBox(height: 200,),
+                    itemCount: AppCubit.list_clinic.length+1,
+                    separatorBuilder: (context, index) {
+                      return Container(
 
-                        child: Divider(
-                          color: Colors.grey,
-                        ));
-                  },
+                          child: Divider(
+                            color: Colors.grey,
+                          ));
+                    },
+                  ),
+                ):Expanded(child: CustomEmpty("images/no_clinic_visits.png", "No Absence  "),
+                // emptyClinic()
                 ),
-              ):Expanded(child: CustomEmpty("images/no_clinic_visits.png", "No Absence  "),
-              // emptyClinic()
-              ),
 
-            ],
+              ],
+            ),
           ),
         ),
       );

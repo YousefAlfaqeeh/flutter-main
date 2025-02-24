@@ -100,7 +100,7 @@ class _FilterState extends State<Filter> {
                     leadingWidth: 100,
                     leading: Container(
                         padding: EdgeInsets.only(left:  28),
-                        child: Image(image: AssetImage('images/trackware_school.png'),width:  40,height: 30,)),
+                        child: Image(image: AssetImage(AppCubit.trackware_school),width:  40,height: 30,)),
                     actions: [
                       Padding(
                         padding: EdgeInsets.only(left: 20,top: 10,right: 20),
@@ -404,6 +404,11 @@ crossAxisAlignment: CrossAxisAlignment.start,
                                         AppCubit.stutes_notif='';
                                         _character = 'all';
                                       });
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => Hiome_Kids(),
+                                          ));
                                     },
 
                                     child: Container(

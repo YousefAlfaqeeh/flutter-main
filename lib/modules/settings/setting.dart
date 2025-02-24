@@ -86,7 +86,7 @@ class _SettingState extends State<Setting> {
                       child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                        Container(child: Image(image: AssetImage("images/logo_without.png") ,width: MediaQuery.of(context).size.width/6,height: MediaQuery.of(context).size.height/10,) ),
+                        Container(child: Image(image: AssetImage(AppCubit.trackware_school) ,width: MediaQuery.of(context).size.width/6,height: MediaQuery.of(context).size.height/10,) ),
                         Row(children: [
                            Expanded(
                               child: Text(AppLocalizations.of(context).translate('checked_in')
@@ -233,7 +233,7 @@ class _SettingState extends State<Setting> {
                               //   MaterialPageRoute(builder: (context) => AddNewTask()),
                               // );
                             },
-                              child: Text('Logout'
+                              child: Text(AppLocalizations.of(context).translate('logout')
                               ,
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,  fontSize: 17

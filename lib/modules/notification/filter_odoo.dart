@@ -99,7 +99,7 @@ if(SizerUtil.deviceType ==DeviceType.tablet)
                     leadingWidth: 30.w,
                     leading: Container(
                         padding: EdgeInsets.symmetric(horizontal: 2.w),
-                        child: Image(image: AssetImage('images/trackware_school.png'),width:  20.w,height: 15.w,)),
+                        child: Image(image: AssetImage(AppCubit.trackware_school),width:  20.w,height: 15.w,)),
                     actions: [
                       Padding(
                         padding: EdgeInsets.only(left: 30,top: 10,right: 30),
@@ -282,7 +282,7 @@ if(SizerUtil.deviceType ==DeviceType.tablet)
                                         Container(
                                           height: 30,
                                           child: ListTile(
-                                            title:  Text(AppLocalizations.of(context).translate('Confirm_r')),
+                                            title:  Text(AppLocalizations.of(context).translate('CONFIRM_ev')),
                                             leading: Radio<String>(
                                               value: 'Confirm',
                                               groupValue: _character,
@@ -328,7 +328,8 @@ if(SizerUtil.deviceType ==DeviceType.tablet)
 
                                     setState(() {
 
-                                      if(textTo!='Date To' &&  textFrom != 'Date From'){if(fromDate!=null && fromTo!=null){
+                                      if(textTo!='Date To' &&  textFrom != 'Date From'){
+                                        if(fromDate!=null && fromTo!=null){
                                         AppCubit.fromDate_odoo=fromDate;
                                         AppCubit.fromTo_odoo=fromTo;
 
@@ -341,6 +342,21 @@ if(SizerUtil.deviceType ==DeviceType.tablet)
                                             fromTo.month.toString() +
                                             '-' +
                                             fromTo.year.toString();}}
+                                      else if(textTo!='Date To')
+                                        {
+                                          if(fromTo!=null)
+                                            {
+                                              AppCubit.fromTo_odoo=fromTo;
+                                            }
+                                        }
+                                      else if(textFrom!='Date From')
+                                      {
+                                        if(fromDate!=null)
+                                        {
+                                          AppCubit.fromDate_odoo=fromDate;
+
+                                        }
+                                      }
                                       AppCubit.stutes_notif_odoo=_character.toString();
                                       AppCubit.filter=true;
 
@@ -398,11 +414,31 @@ if(SizerUtil.deviceType ==DeviceType.tablet)
                                       textTo = 'Date To';
                                       _character = '';
                                       Reset.clear_searhe();
-                                      // AppCubit.filter=false;
+                                      AppCubit.filter=false;
                                       // AppCubit.stutes_notif_odoo='';
                                       // AppCubit. fromDate_odoo=DateTime.parse("2016-01-01 00:00:00");
                                       // AppCubit. fromTo_odoo=DateTime.parse("2035-01-01 00:00:00");
                                     });
+
+                                    if(AppCubit.show_st) {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                New_AllEvents(
+                                                    std_id: AppCubit.std),
+                                          ));
+                                    }
+                                    else
+                                    {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                Clinic_new(
+                                                    std_id: AppCubit.std),
+                                          ));
+                                    }
                                   },
 
                                   child: Container(

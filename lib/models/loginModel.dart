@@ -4,6 +4,9 @@ class LoginModel {
   List<Null>? kids;
   List<NotificationsText>? notificationsText;
   int? uid;
+  bool?sms_system;
+  bool?full_system;
+  bool?tracking_system;
   String? sessionId;
   String? webBaseUrl;
   String? authorization;
@@ -15,7 +18,8 @@ class LoginModel {
         this.uid,
         this.sessionId,
         this.webBaseUrl,
-        this.authorization});
+        this.authorization,
+      this.full_system,this.sms_system,this.tracking_system});
 
   LoginModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
@@ -31,6 +35,9 @@ class LoginModel {
         notificationsText!.add(NotificationsText.fromJson(v));
       });
     }
+    full_system = json['full_system'];
+    sms_system = json['sms_system'];
+    tracking_system = json['tracking_system'];
     uid = json['uid'];
     sessionId = json['session_id'];
     webBaseUrl = json['web_base_url'];
@@ -47,6 +54,9 @@ class LoginModel {
       data['notifications_text'] =
           notificationsText!.map((v) => v.toJson()).toList();
     }
+    data['full_system'] = full_system;
+    data['sms_system'] = sms_system;
+    data['tracking_system'] = tracking_system;
     data['uid'] = uid;
     data['session_id'] = sessionId;
     data['web_base_url'] = webBaseUrl;

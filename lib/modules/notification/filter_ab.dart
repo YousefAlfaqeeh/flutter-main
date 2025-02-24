@@ -28,6 +28,8 @@ class Filter_odoo_ab extends StatefulWidget {
 class _Filter_odoo_abState extends State<Filter_odoo_ab> {
   String? _character = 'Excuse';
   String? _character1 = 'Approved';
+  String _character_da='';
+  String _character_reg='';
   TextEditingController user_name = TextEditingController();
   DateTime dateTime = DateTime.now();
   late DateTime fromDate;
@@ -102,7 +104,7 @@ class _Filter_odoo_abState extends State<Filter_odoo_ab> {
                     leadingWidth: 30.w,
                     leading: Container(
                         padding: EdgeInsets.symmetric(horizontal: 2.w),
-                        child: Image(image: AssetImage('images/trackware_school.png'),width:  20.w,height: 15.w,)),
+                        child: Image(image: AssetImage(AppCubit.trackware_school),width:  20.w,height: 15.w,)),
                     actions: [
                       Padding(
                         padding: EdgeInsets.only(left: 30,top: 10,right: 30),
@@ -275,6 +277,8 @@ crossAxisAlignment: CrossAxisAlignment.start,
                                               onChanged: ( value) {
                                                 setState(() {
                                                   _character = value;
+                                                   _character_da=value!;
+
                                                 });
                                               },
                                             ),
@@ -285,12 +289,13 @@ crossAxisAlignment: CrossAxisAlignment.start,
                                           child: ListTile(
                                             title:  Text(AppLocalizations.of(context).translate('Unexcuse_Absence')),
                                             leading: Radio<String>(
-                                              value: 'Unexcuse',
+                                              value: 'Unexcused',
                                               groupValue: _character,
                                               onChanged: ( value) {
                                                 setState(() {
                                                   // print(value);
                                                   _character = value;
+                                                  _character_da=value!;
                                                 });
                                               },
                                             ),
@@ -322,6 +327,7 @@ crossAxisAlignment: CrossAxisAlignment.start,
                                               setState(() {
                                                 // print("kkkkksss");
                                                 _character1 = value;
+                                                _character_reg=value!;
                                               });
                                             },
                                           ),
@@ -337,6 +343,7 @@ crossAxisAlignment: CrossAxisAlignment.start,
                                             onChanged: ( value) {
                                               setState(() {
                                                 _character1 = value;
+                                                _character_reg=value!;
                                               });
                                             },
                                           ),
@@ -375,10 +382,25 @@ crossAxisAlignment: CrossAxisAlignment.start,
                                             fromTo.month.toString() +
                                             '-' +
                                             fromTo.year.toString();}}
+                                      else if(textTo!='Date To')
+                                      {
+                                        if(fromTo!=null)
+                                        {
+                                          AppCubit.fromTo_odoo=fromTo;
+                                        }
+                                      }
+                                      else if(textFrom!='Date From')
+                                      {
+                                        print(fromDate);
+                                        if(fromDate!=null)
+                                        {
+                                          AppCubit.fromDate_odoo=fromDate;
 
-                                      AppCubit.stutes_notif_odoo=_character1.toString();
+                                        }
+                                      }
+                                      AppCubit.stutes_notif_odoo=_character_reg.toString();
                                       // print( AppCubit.stutes_notif_odoo);
-                                      AppCubit.stutes_notif_da_odoo=_character.toString();
+                                      AppCubit.stutes_notif_da_odoo=_character_da.toString();
                                     });
 
                                       Navigator.push(
@@ -423,6 +445,14 @@ crossAxisAlignment: CrossAxisAlignment.start,
                                       _character = '';
                                       Reset.clear_searhe();
                                     });
+
+
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              Absence(std_id:  AppCubit.std,std_name:  AppCubit.student_name,),
+                                        ));
                                   },
 
                                   child: Container(

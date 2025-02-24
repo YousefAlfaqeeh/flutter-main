@@ -34,11 +34,12 @@ class Banned_student {
 class DateIte {
   String? name;
   int? id;
+  int?product_id;
   String? price;
   String? image;
   String? type;
 
-  DateIte({this.name, this.id, this.price, this.image,this.type});
+  DateIte({this.name, this.id, this.price, this.image,this.type,this.product_id});
 
   DateIte.fromJson(Map<String, dynamic> json) {
     name = json['name'];
@@ -46,6 +47,7 @@ class DateIte {
     price = json['price'];
     image = json['image'];
     type = json['type'];
+    product_id = json['product_id'];
   }
 
   Map<String, dynamic> toJson() {
@@ -55,6 +57,7 @@ class DateIte {
     data['price'] = this.price;
     data['image'] = this.image;
     data['type'] = this.type;
+    data['product_id'] = this.product_id;
     return data;
   }
 }

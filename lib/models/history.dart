@@ -124,13 +124,14 @@ class Notifications {
   String? createdateTime;
   String? imageLink;
   String? plan_name;
+  List<Attachments>? attachments;
 
   Notifications(
       {this.avatar,
         this.dateTime,
         this.notificationsTitle,
         this.notificationsText,this.studentName,this.notificationsType,this.studentId,this.iconTracking,this.notificationsId
-        ,this.notificationsRead,this.notificationsShow,this.actionId,this.notificationsTitleAr,this.notificationsTextAr,this.studentImage,this.createdateTime,this.imageLink,this.plan_name});
+        ,this.notificationsRead,this.notificationsShow,this.actionId,this.notificationsTitleAr,this.notificationsTextAr,this.studentImage,this.createdateTime,this.imageLink,this.plan_name,this.attachments});
 
   Notifications.fromJson(Map<String, dynamic> json) {
     avatar = json['avatar'];
@@ -151,6 +152,16 @@ class Notifications {
     createdateTime=json['create_date'];
     imageLink=json['imageLink'];
     plan_name=json['plan_name'];
+    if (json['attachments'] != null) {
+      attachments = <Attachments>[];
+      json['attachments'].forEach((v) {
+        attachments!.add(new Attachments.fromJson(v));
+      });
+    }
+    else
+      {
+        attachments=[];
+      }
   }
 
   Map<String, dynamic> toJson() {
@@ -173,7 +184,34 @@ class Notifications {
     data['create_date']=this.createdateTime;
     data['imageLink']=imageLink;
     data['plan_name']=plan_name;
+    if (this.attachments != null) {
+      data['attachments'] = this.attachments!.map((v) => v.toJson()).toList();
+    }
     //plan_name
+    return data;
+  }
+}
+
+
+
+class Attachments {
+  int? id;
+  String? name;
+  String? datas;
+
+  Attachments({this.id, this.name, this.datas});
+
+  Attachments.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    datas = json['datas'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['name'] = this.name;
+    data['datas'] = this.datas;
     return data;
   }
 }

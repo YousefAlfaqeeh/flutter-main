@@ -4,35 +4,43 @@
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-<!--    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />-->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+
+    <!--    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />-->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-<!--    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>-->
+    <!--    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>-->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
-<!--    <uses-permission android:name="android.permission.INTERNET"/>-->
-<!--    <uses-permission android:name="android.permission.CAMERA" />-->
-<!--    <uses-permission android:name="android.permission.RECORD_AUDIO" />-->
-<!--    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />-->
-<!--    <uses-permission android:name="android.permission.VIDEO_CAPTURE" />-->
-<!--    <uses-permission android:name="android.permission.AUDIO_CAPTURE" />-->
-<!--    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />-->
-<!--    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />-->
-<!--    <uses-feature android:name="android.hardware.NFC" />-->
-<!--    <uses-permission android:name="android.permission.NFC"/>-->
+    <!--    <uses-permission android:name="android.permission.INTERNET"/>-->
+    <!--    <uses-permission android:name="android.permission.CAMERA" />-->
+    <!--    <uses-permission android:name="android.permission.RECORD_AUDIO" />-->
+    <!--    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />-->
+    <!--    <uses-permission android:name="android.permission.VIDEO_CAPTURE" />-->
+    <!--    <uses-permission android:name="android.permission.AUDIO_CAPTURE" />-->
+    <!--    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />-->
+    <!--    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />-->
+    <!--    <uses-feature android:name="android.hardware.NFC" />-->
+    <!--    <uses-permission android:name="android.permission.NFC"/>-->
 
 
-   <application
-       android:requestLegacyExternalStorage="true"
-       android:usesCleartextTraffic="true"
+    <application
+
+        android:requestLegacyExternalStorage="true"
+        android:usesCleartextTraffic="true"
         android:label="@string/app_name"
         android:name="${applicationName}"
-       android:allowBackup= "false"
+        android:allowBackup= "false"
 
         android:icon="@mipmap/ic_launcher">
-       <meta-data android:name="com.google.android.geo.API_KEY"
-           android:value="AIzaSyDX8JW2LuHDhaiYUI58tsYw3b6j1gjELKo"/>
-       <meta-data android:name="android.webkit.WebView.EnableSafeBrowsing"
-           android:value="false" />
+        <meta-data android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDX8JW2LuHDhaiYUI58tsYw3b6j1gjELKo"/>
+        <meta-data android:name="android.webkit.WebView.EnableSafeBrowsing"
+            android:value="false" />
 
 
         <activity
@@ -48,9 +56,9 @@
                  while the Flutter UI initializes. After that, this theme continues
                  to determine the Window background behind the Flutter UI. -->
             <meta-data
-              android:name="io.flutter.embedding.android.NormalTheme"
-              android:resource="@style/NormalTheme"
-              />
+                android:name="io.flutter.embedding.android.NormalTheme"
+                android:resource="@style/NormalTheme"
+                />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -61,62 +69,66 @@
             </intent-filter>
 
         </activity>
-<!--       <provider-->
-<!--           android:name="vn.hunghd.flutterdownloader.DownloadedFileProvider"-->
-<!--           android:authorities="${applicationId}.flutter_downloader.provider"-->
-<!--           android:exported="false"-->
-<!--           android:grantUriPermissions="true">-->
-<!--           <meta-data-->
-<!--               android:name="android.support.FILE_PROVIDER_PATHS"-->
-<!--               android:resource="@xml/provider_paths"/>-->
-<!--       </provider>-->
-<!--       &lt;!&ndash; Begin FlutterDownloader customization &ndash;&gt;-->
-<!--       &lt;!&ndash; disable default Initializer &ndash;&gt;-->
-<!--       <provider-->
-<!--           android:name="androidx.startup.InitializationProvider"-->
-<!--           android:authorities="${applicationId}.androidx-startup"-->
-<!--           android:exported="false"-->
-<!--           tools:node="merge">-->
-<!--           <meta-data-->
-<!--               android:name="androidx.work.WorkManagerInitializer"-->
-<!--               android:value="androidx.startup"-->
-<!--               tools:node="remove" />-->
-<!--       </provider>-->
+        <!--       <provider-->
+        <!--           android:name="vn.hunghd.flutterdownloader.DownloadedFileProvider"-->
+        <!--           android:authorities="${applicationId}.flutter_downloader.provider"-->
+        <!--           android:exported="false"-->
+        <!--           android:grantUriPermissions="true">-->
+        <!--           <meta-data-->
+        <!--               android:name="android.support.FILE_PROVIDER_PATHS"-->
+        <!--               android:resource="@xml/provider_paths"/>-->
+        <!--       </provider>-->
+        <!--       &lt;!&ndash; Begin FlutterDownloader customization &ndash;&gt;-->
+        <!--       &lt;!&ndash; disable default Initializer &ndash;&gt;-->
+        <!--       <provider-->
+        <!--           android:name="androidx.startup.InitializationProvider"-->
+        <!--           android:authorities="${applicationId}.androidx-startup"-->
+        <!--           android:exported="false"-->
+        <!--           tools:node="merge">-->
+        <!--           <meta-data-->
+        <!--               android:name="androidx.work.WorkManagerInitializer"-->
+        <!--               android:value="androidx.startup"-->
+        <!--               tools:node="remove" />-->
+        <!--       </provider>-->
 
-<!--       &lt;!&ndash; declare customized Initializer &ndash;&gt;-->
-<!--       <provider-->
-<!--           android:name="vn.hunghd.flutterdownloader.FlutterDownloaderInitializer"-->
-<!--           android:authorities="${applicationId}.flutter-downloader-init"-->
-<!--           android:exported="false">-->
-<!--           &lt;!&ndash; changes this number to configure the maximum number of concurrent tasks &ndash;&gt;-->
-<!--           <meta-data-->
-<!--               android:name="vn.hunghd.flutterdownloader.MAX_CONCURRENT_TASKS"-->
-<!--               android:value="5" />-->
-<!--       </provider>-->
-       <!-- End FlutterDownloader customization -->
+        <!--       &lt;!&ndash; declare customized Initializer &ndash;&gt;-->
+        <!--       <provider-->
+        <!--           android:name="vn.hunghd.flutterdownloader.FlutterDownloaderInitializer"-->
+        <!--           android:authorities="${applicationId}.flutter-downloader-init"-->
+        <!--           android:exported="false">-->
+        <!--           &lt;!&ndash; changes this number to configure the maximum number of concurrent tasks &ndash;&gt;-->
+        <!--           <meta-data-->
+        <!--               android:name="vn.hunghd.flutterdownloader.MAX_CONCURRENT_TASKS"-->
+        <!--               android:value="5" />-->
+        <!--       </provider>-->
+        <!-- End FlutterDownloader customization -->
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
 
-<!--       <meta-data-->
-<!--           android:name="com.google.firebase.messaging.default_notification_channel_id"-->
-<!--           android:value="high_importance_channel" />-->
+        <!--       <meta-data-->
+        <!--           android:name="com.google.firebase.messaging.default_notification_channel_id"-->
+        <!--           android:value="high_importance_channel" />-->
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
-       <meta-data
-           android:name="com.google.firebase.messaging.default_notification_icon"
-           android:resource="@drawable/icon_notif" />
-       <meta-data
-           android:name="com.google.firebase.messaging.default_notification_channel_id"
-           android:value="@string/default_notification_channel_id"
-           android:resource="@raw/new_beeb"/>
-<!--       <meta-data-->
-<!--           android:name="com.google.firebase.messaging.default_notification_color"-->
-<!--           android:resource="@color/my_red" />-->
-<!--       <meta-data-->
-<!--           android:name="com.google.firebase.messaging.default_notification_channel_id"-->
-<!--           android:value="high_importance_channel"-->
-<!--         />-->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/icon_notif" />
+<!--        <meta-data-->
+<!--            android:name="com.google.firebase.messaging.default_notification_channel_id"-->
+<!--            android:value="@string/default_notification_channel_id"-->
+<!--            android:resource="@raw/new_beeb"/>-->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="custom_channel_id" />
+
+        <!--       <meta-data-->
+        <!--           android:name="com.google.firebase.messaging.default_notification_color"-->
+        <!--           android:resource="@color/my_red" />-->
+        <!--       <meta-data-->
+        <!--           android:name="com.google.firebase.messaging.default_notification_channel_id"-->
+        <!--           android:value="high_importance_channel"-->
+        <!--         />-->
     </application>
 </manifest>
-<!--    imageUrl: "https://my-cdn.com/extreme-weather.png",-->
+    <!--    imageUrl: "https://my-cdn.com/extreme-weather.png",-->

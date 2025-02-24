@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,8 +11,11 @@ import 'package:intl/intl.dart';
 import 'package:udemy_flutter/models/Allergies.dart';
 import 'package:udemy_flutter/models/absenceRequest.dart';
 import 'package:udemy_flutter/models/assModel.dart';
+import 'package:udemy_flutter/models/attacurl.dart';
 import 'package:udemy_flutter/models/banned_student.dart';
 import 'package:udemy_flutter/models/canteen_student.dart';
+import 'package:udemy_flutter/models/chat.dart';
+import 'package:udemy_flutter/models/conversation.dart';
 import 'package:udemy_flutter/models/food_student.dart';
 import 'package:udemy_flutter/models/getAllWeeklyPlans.dart';
 import 'package:udemy_flutter/models/getAllWorksheet.dart';
@@ -20,6 +24,7 @@ import 'package:udemy_flutter/models/innerWeeklyPlans.dart';
 import 'package:udemy_flutter/models/item_m.dart';
 import 'package:udemy_flutter/models/kidsList.dart';
 import 'package:udemy_flutter/models/loginModel.dart';
+import 'package:udemy_flutter/models/markMod.dart';
 import 'package:udemy_flutter/models/modelAllEvents.dart';
 import 'package:udemy_flutter/models/modelCalendar.dart';
 import 'package:udemy_flutter/models/modelClinic.dart';
@@ -47,6 +52,8 @@ class AppCubit extends Cubit<AppStates> {
 
   static AppCubit get(context) => BlocProvider.of(context);
   static List<Students> list_st = [];
+  static List<Teachers> teachers = [];
+  static List<Messages> messages = [];
   static late DateTime fromDate;
   static late DateTime fromTo;
   static late MeetingDataSource allMeetings = MeetingDataSource([
@@ -58,7 +65,15 @@ class AppCubit extends Cubit<AppStates> {
       isAllDay: true,
     )
   ]);
+  static String parent_id='';
+  static String url_att='';
+  static String trackware_school = 'images/trackware_school.png';
+  // images/ic_new_logo.png
+  static String new_logo = 'images/ic_new_logo.png';
+  // static String new_logo = 'images/mobily.png';
+  // static String trackware_school = 'images/mobily.png';
   static DateTime fromDate_odoo = DateTime.parse("2016-01-01 00:00:00");
+  static String typeAbs='';
   static DateTime fromTo_odoo = DateTime.parse("2035-01-01 00:00:00");
   static late String selectedValue;
   static String student_name = '';
@@ -71,6 +86,8 @@ class AppCubit extends Cubit<AppStates> {
   static String stutes_notif_da_odoo = '';
   static String stutes_notif = '';
   static bool filter = false;
+  static bool filter_n = false;
+  // filter_n
   static bool flag_req = false;
   static List file = [];
   static List subject_odoo = [];
@@ -116,6 +133,7 @@ class AppCubit extends Cubit<AppStates> {
   bool isObscur1 = true;
   static bool isBorrowd = false;
   static Locale? locale;
+
   String status = '';
   List<School> school_list = [];
   static List<dynamic> school_list1 = [];
@@ -129,6 +147,9 @@ class AppCubit extends Cubit<AppStates> {
   Food_student?food_student;
   Item_model?item_model;
   Kids_list? student;
+  Conversation? conversation;
+  AttUrl? attUrl;
+  ChatTeacher? chatTeacher;
   ModelExam? modelExam;
   static ModelBadges? modelBadges;
   AllEvent? allEvent;
@@ -145,11 +166,12 @@ class AppCubit extends Cubit<AppStates> {
   AllWeeklyPlan? allWeeklyPlan;
   WorkSheet? workSheet;
   ModelEvents? modelEvents;
+  static ResultUrl? resultUrl;
   InnerWeeklyPlan? innerWeeklyPlan;
   static List<Lines_time_table> list_tableTime = [];
   TableTime?tableTime;
   SettingModel? settingModel;
-  LoginModel? login_info;
+  static LoginModel? login_info;
   School? data_base, s;
   String db_name = '';
   String start_date = '2022-01-01 01:12:12';
@@ -178,6 +200,10 @@ class AppCubit extends Cubit<AppStates> {
   static String title_firbase = '';
   static String message_firbase = '';
   static bool flag_firbase = false;
+  mark? markM;
+  static String code_yesr='';
+  static List<AllExam> allExam = [];
+
   String std_id = '';
   static List<Features> listdetail = [];
   List data = ["English", "عربي"];
@@ -209,6 +235,202 @@ class AppCubit extends Cubit<AppStates> {
     });
   }
 
+
+  getChat( String std,String teacher_id) async {
+    // CacheHelper.getBoolean(key: 'base_url')
+
+    String? token;
+
+    if (login_info?.authorization != null) {
+      token = login_info?.authorization.toString();
+    } else {
+      token = CacheHelper.getBoolean(key: 'authorization');
+    }
+    await DioHelperChat.postData(url: CacheHelper.getBoolean(key: 'base_url')+"get_chat", data: {
+      "jsonrpc":"2:0",
+      "params":{
+        "student_id":std,
+        "teacher_id":teacher_id
+      }
+
+    }, token: token).then(
+          (value) async {
+            chatTeacher = ChatTeacher.fromJson(value.data);
+            messages = chatTeacher!.result!.messages!;
+            print("---------"+messages.length.toString());
+        emit(AppChat());
+      },
+    ).catchError((onError) {
+      print(onError);
+      print("------------------------------------------rrrrrrrttttt"+teacher_id+"  "+std);
+
+    });
+  }
+
+  getLastChat( String std,String teacher_id) async {
+    // CacheHelper.getBoolean(key: 'base_url')
+
+    String? token;
+
+    if (login_info?.authorization != null) {
+      token = login_info?.authorization.toString();
+    } else {
+      token = CacheHelper.getBoolean(key: 'authorization');
+    }
+    await DioHelperChat.postData(url: CacheHelper.getBoolean(key: 'base_url')+"get_last_chat_student", data: {
+      "jsonrpc":"2:0",
+      "params":{
+        "student_id":std,
+        "teacher_id":teacher_id
+      }
+
+    }, token: token).then(
+          (value) async {
+        chatTeacher = ChatTeacher.fromJson(value.data);
+        messages += chatTeacher!.result!.messages!;
+        print("---------rrrr "+messages.length.toString());
+        emit(AppChat());
+      },
+    ).catchError((onError) {
+      print(onError);
+      print("------------------------------------------296"+teacher_id+"  "+std);
+
+    });
+  }
+
+  postChat( String std,String teacher_id,String message,List files) async {
+    // CacheHelper.getBoolean(key: 'base_url')
+
+    String? token;
+
+    if (login_info?.authorization != null) {
+
+      token = login_info?.authorization.toString();
+    } else {
+
+      token = CacheHelper.getBoolean(key: 'authorization');
+    }
+    await DioHelperChat.postData(url: CacheHelper.getBoolean(key: 'base_url')+"post_chat", data: {
+      "jsonrpc":"2:0",
+      "params":{
+        "student_id":std,
+        "teacher_id":teacher_id,
+        "message":message,
+        "attached_files":files
+      }
+
+    }, token: token).then(
+          (value) async {
+
+
+        emit(AppChat());
+      },
+    ).catchError((onError) {
+      // print("------------------onError-");
+      // print(onError);
+    });
+  }
+  getallConversation( String std) async {
+    // CacheHelper.getBoolean(key: 'base_url')
+
+    String? token;
+
+    if (login_info?.authorization != null) {
+
+      token = login_info?.authorization.toString();
+    } else {
+
+      token = CacheHelper.getBoolean(key: 'authorization');
+      // print( CacheHelper.getBoolean(key: 'base_url'));
+    }
+
+    await DioHelperChat.postData(url: CacheHelper.getBoolean(key: 'base_url')+"get_all_teacher_chat", data: {
+      "jsonrpc":"2:0",
+      "params":{
+        "student_id":std
+      }
+
+    }, token: token).then(
+          (value) async {
+
+            conversation = Conversation.fromJson(value.data);
+
+            teachers = conversation!.result!.teachers!;
+
+
+        emit(AppConversation());
+      },
+    ).catchError((onError) {
+      print(onError);
+      print("----------");
+    });
+  }
+  getUrlAtt( String attached_type,String attached_id,String attached_data) async {
+    // CacheHelper.getBoolean(key: 'base_url')
+
+    String? token;
+    if (login_info?.authorization != null) {
+      token = login_info?.authorization.toString();
+    } else {
+
+      token = CacheHelper.getBoolean(key: 'authorization');
+    }
+    await DioHelperChat.postData(url: CacheHelper.getBoolean(key: 'base_url')+"download_attachment", data: {
+      "jsonrpc":"2:0",
+      "params":{
+
+        "attachment_type":attached_type,
+        "attachment_id":attached_id,
+        "lang":CacheHelper.getBoolean(key: 'lang')
+      }
+
+    }, token: token).then(
+          (value) async {
+            // print(value.data);
+            attUrl = AttUrl.fromJson(value.data);
+            // print(value.data);
+            resultUrl=attUrl!.result!;
+        //
+        // teachers = conversation!.result!.teachers!;
+
+        emit(AppConversation());
+      },
+    ).catchError((onError) {
+      // print(onError);
+    });
+  }
+  deleteUrlAtt( String attached_name) async {
+    // CacheHelper.getBoolean(key: 'base_url')
+
+    String? token;
+
+    if (login_info?.authorization != null) {
+
+      token = login_info?.authorization.toString();
+    } else {
+
+      token = CacheHelper.getBoolean(key: 'authorization');
+    }
+    await DioHelperChat.postData(url: CacheHelper.getBoolean(key: 'base_url')+"remove_attachment", data: {
+      "jsonrpc":"2:0",
+      "params":{
+
+        "attachment_name":attached_name,
+      }
+
+    }, token: token).then(
+          (value) async {
+            print(value.data);
+
+        //
+        // teachers = conversation!.result!.teachers!;
+
+        emit(AppConversation());
+      },
+    ).catchError((onError) {
+      print(onError);
+    });
+  }
   void isObscur() {
     isObscur1 = !isObscur1;
     emit(AppObscurState());
@@ -243,13 +465,19 @@ class AppCubit extends Cubit<AppStates> {
             'mobile_token': token,
             'school_name': schoolName
           };
-          print(value.data);
+          // print(value.data);
           login_info = LoginModel.fromJson(value.data);
 
           if (login_info?.status == 'ok') {
             CacheHelper.saveData(key: 'school_name', value: db_name);
             CacheHelper.saveData(
                 key: 'base_url', value: login_info?.webBaseUrl);
+            CacheHelper.saveData(
+                key: 'full_system', value: login_info?.full_system);
+            CacheHelper.saveData(
+                key: 'sms_system', value: login_info?.sms_system);
+            CacheHelper.saveData(
+                key: 'tracking_system', value: login_info?.tracking_system);
             CacheHelper.saveData(
                 key: 'authorization', value: login_info?.authorization);
             CacheHelper.saveData(
@@ -264,6 +492,7 @@ class AppCubit extends Cubit<AppStates> {
                     token: CacheHelper.getBoolean(key: 'authorization'))
                 .then(
               (value) async {
+
                 notification = Notification_api.fromJson(value.data);
                 list_notif = await notification!.notifications;
                 status = 'OK';
@@ -297,7 +526,9 @@ class AppCubit extends Cubit<AppStates> {
     // });
   }
 
+
   Future<void> getChildren() async {
+
     String? token;
     bool t;
     if (login_info?.authorization != null) {
@@ -310,9 +541,7 @@ class AppCubit extends Cubit<AppStates> {
     var responseKids =
         await DioHelper.postData(url: Kids_List, data: {}, token: token).then(
       (value) async {
-// print(value.data);
         student = Kids_list.fromJson(value.data);
-        // print(value.data);
         list_st = student!.students!;
         // print(list_st);
 
@@ -322,6 +551,8 @@ class AppCubit extends Cubit<AppStates> {
             CacheHelper.saveData(key: 'school_name', value: db_name);
             CacheHelper.saveData(
                 key: 'base_url', value: login_info?.webBaseUrl);
+            CacheHelper.saveData(
+                key: 'parent_id', value: student?.parentId.toString());
             CacheHelper.saveData(
                 key: 'authorization', value: login_info?.authorization);
             CacheHelper.saveData(
@@ -338,6 +569,8 @@ class AppCubit extends Cubit<AppStates> {
       },
     ).catchError((onError) {
       status = 'Connection';
+      print("----------");
+      print(onError);
     });
   }
 
@@ -351,6 +584,7 @@ class AppCubit extends Cubit<AppStates> {
       end_date = fromTo.toString();
     }
 
+
     var responseKids = await DioHelper.postData(
             url: Kids_history,
             data: {
@@ -360,9 +594,9 @@ class AppCubit extends Cubit<AppStates> {
             token: CacheHelper.getBoolean(key: 'authorization'))
         .then(
       (value) {
+
         notification = Notification_api.fromJson(value.data);
         list_notif = notification!.notifications;
-        print(list_notif);
       },
     ).catchError((onError) {
       print(onError);
@@ -555,9 +789,14 @@ class AppCubit extends Cubit<AppStates> {
     var responseAss =
         await DioHelper.getData(url: Get_Ass + student_id, token: token).then(
       (value) async {
+        subject_odoo=[];
         modelAss = ModelAss.fromJson(value.data);
         list_Ass = modelAss!.result!;
-
+        for( int i=0;i<list_Ass.length;i++)
+        {
+          subject_odoo.add(list_Ass[i].subject);
+        }
+        subject_odoo = subject_odoo.toSet().toList();
         emit(AppAssState());
       },
     ).catchError((onError) {});
@@ -577,9 +816,14 @@ class AppCubit extends Cubit<AppStates> {
     var responseExam =
         await DioHelper.getData(url: Get_Exam + student_id, token: token).then(
       (value) async {
-        // print(value.data);
+        subject_odoo=[];
         modelExam = ModelExam.fromJson(value.data);
         list_Exam = modelExam!.result!;
+        for( int i=0;i<list_Exam.length;i++)
+        {
+          subject_odoo.add(list_Exam[i].subject);
+        }
+        subject_odoo = subject_odoo.toSet().toList();
         emit(AppExamState());
       },
     ).catchError((onError) {
@@ -641,20 +885,35 @@ class AppCubit extends Cubit<AppStates> {
 
         final List<Meeting> meetings = <Meeting>[];
         for (int i = 0; i < list_calendar.length; i++) {
-          DateTime today = DateFormat('dd MMM yyyy')
-              .parse(list_calendar[i].startDate.toString());
-          // print(today);
-          // final DateTime today = DateTime.now();
-          final DateTime startTime =
-              DateTime(today.year, today.month, today.day, 9);
-          final DateTime endTime = startTime.add(const Duration(hours: 2));
-          meetings.add(Meeting(
-            from: startTime,
-            to: endTime,
-            eventName: list_calendar[i].name.toString(),
-            background: Color(0xff3c92d0),
-            isAllDay: true,
-          ));
+          if(list_calendar[i].startDate.toString().isNotEmpty){
+            DateTime today = DateFormat('dd MMM yyyy')
+                .parse(list_calendar[i].startDate.toString());
+            // final DateTime today = DateTime.now();
+            final DateTime startTime =
+            DateTime(today.year, today.month, today.day, 9);
+            final DateTime endTime = startTime.add(const Duration(hours: 2));
+            meetings.add(Meeting(
+              from: startTime,
+              to: endTime,
+              eventName: list_calendar[i].name.toString(),
+              background: Color(0xff3c92d0),
+              isAllDay: true,
+            ));
+          }
+          else{
+            final DateTime today = DateTime.now();
+            final DateTime startTime =
+            DateTime(today.year, today.month, today.day, 9);
+            final DateTime endTime = startTime.add(const Duration(hours: 2));
+            meetings.add(Meeting(
+              from: startTime,
+              to: endTime,
+              eventName: list_calendar[i].name.toString(),
+              background: Color(0xff3c92d0),
+              isAllDay: true,
+            ));
+          }
+
         }
 
         allMeetings = MeetingDataSource(meetings);
@@ -819,6 +1078,13 @@ class AppCubit extends Cubit<AppStates> {
       (value) async {
         allWorksheet = AllWorksheet.fromJson(value.data);
         list_allWorkSheet = allWorksheet!.result!;
+        subject_odoo=[];
+        for( int i=0;i<list_allWorkSheet.length;i++)
+          {
+            subject_odoo.add(list_allWorkSheet[i].subject);
+          }
+
+        subject_odoo = subject_odoo.toSet().toList();
         emit(AppAllWorkSheetState());
       },
     ).catchError((onError) {});
@@ -869,7 +1135,11 @@ class AppCubit extends Cubit<AppStates> {
 
         emit(AppFormWorkState());
       },
-    ).catchError((onError) {});
+    ).catchError((onError) {
+      print("object");
+      print(onError);
+      
+    });
   }
 
   Future<void> getFormEvent(String event, String std) async {
@@ -939,7 +1209,7 @@ class AppCubit extends Cubit<AppStates> {
             allergies = Allergies.fromJson(value.data);
 
             result_Allergies = allergies!.result!;
-        print(result_Allergies[0].name);
+        // print(result_Allergies[0].name);
 
         emit(AppProductState());
       },
@@ -1000,6 +1270,8 @@ class AppCubit extends Cubit<AppStates> {
         token: token)
         .then(
           (value) async {
+            print("ffffggbbbbb");
+            print(value.data);
         day.clear();
         day_week.clear();
         day_num.clear();
@@ -1037,7 +1309,12 @@ class AppCubit extends Cubit<AppStates> {
 
         emit(AppTimeTableState());
       },
-    ).catchError((onError) {});
+    ).catchError((onError) {
+      print("fffffggggbbbb");
+
+
+
+    });
   }
 
 
@@ -1081,6 +1358,7 @@ class AppCubit extends Cubit<AppStates> {
     await DioHelper.getData(url: Get_Item , token: token)
         .then(
           (value) async {
+            // print(value.data);
             item_model = Item_model.fromJson(value.data);
             category = item_model!.category!;
             product= item_model!.product!;
@@ -1088,6 +1366,8 @@ class AppCubit extends Cubit<AppStates> {
         emit(AppProductState());
       },
     ).catchError((onError) {
+      print("d''d'd'd'd'd'dd'd''d");
+      print(onError);
     });
   }
 
@@ -1111,10 +1391,10 @@ class AppCubit extends Cubit<AppStates> {
         token: CacheHelper.getBoolean(key: 'authorization'))
         .then(
           (value) async {
+            print(value.data);
         //      static List<Banned_student> DateIte = [];
             //   static List<Banned_student> DataCat = [];
         banned_student = Banned_student.fromJson(value.data);
-        //
         dateIte = banned_student!.dateIte!;
         dataCat = banned_student!.dataCat!;
         // spending = canteen_Student!.spending!;
@@ -1125,7 +1405,8 @@ class AppCubit extends Cubit<AppStates> {
         emit(AppProductState());
       },
     ).catchError((onError) {
-      // print(onError);
+      print("-------");
+      print(onError);
     });
   }
   Future<void> getFood(int day_id) async {
@@ -1160,7 +1441,35 @@ class AppCubit extends Cubit<AppStates> {
       print(onError);
     });
   }
+  Future<void> getMarks(String student_id) async {
+    String? token;
+    bool t;
+    if (login_info?.authorization != null) {
+      t = true;
+      token = login_info?.authorization.toString();
+    } else {
+      t = false;
+      token = CacheHelper.getBoolean(key: 'authorization');
+    }
+    var responseKClinic =
+    await DioHelper.getData(url: Get_mark_student + student_id, token: token)
+        .then(
+          (value) async {
 
+        markM = mark.fromJson(value.data);
+        allExam = markM!.allExam!;
+        code_yesr=markM!.code!;
+
+
+        emit(AppClinicState());
+      },
+    ).catchError((onError) {
+
+      print(onError);
+
+
+    });
+  }
 //  dateItem
 
 }

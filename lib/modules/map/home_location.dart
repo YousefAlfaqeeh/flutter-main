@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
@@ -91,6 +93,16 @@ class _HomeLocationState extends State<HomeLocation> {
   LatLng currentLocation = _kGooglePlex.target;
 
   Future<void> location11() async {
+    if(Platform.isAndroid)
+    {
+      Position? _myLocation = await LoctionService().currentLocationAnd();
+      _animateCameraAnd(_myLocation!);
+    }
+    else
+    {
+      LocationData? _myLocation = await LoctionService().currentLocation();
+      _animateCamera(_myLocation!);
+    }
     LocationData? _myLocation = await LoctionService().currentLocation();
     // print("--------------");
     // print(_myLocation);
@@ -123,7 +135,31 @@ class _HomeLocationState extends State<HomeLocation> {
     controller.animateCamera(CameraUpdate.newCameraPosition(_kGooglePlex));
   }
 
+  Future<void> _animateCameraAnd(Position locationData) async {
 
+
+    // Uint8List b= (await NetworkAssetBundle(Uri.parse('https://www.fluttercampus.com/img/car.png')).load('https://www.fluttercampus.com/img/car.png')).buffer.asUint8List();
+    final GoogleMapController controller = await _controller.future;
+    lat = locationData.latitude;
+    long = locationData.longitude;
+    marker.add( Marker(
+        draggable: true,
+        // icon: BitmapDescriptor.fromBytes(b),
+        onDragEnd: (value) {
+          lat=value.longitude;
+          long=value.longitude;
+        },
+
+        markerId: MarkerId("1"),
+        position: LatLng(locationData.latitude!, locationData.longitude!)));
+    CameraPosition _kGooglePlex = CameraPosition(
+      target: LatLng(locationData.latitude!, locationData.longitude!),
+      zoom: 14.4746,
+    );
+    lat=locationData.longitude;
+    long=locationData.longitude;
+    controller.animateCamera(CameraUpdate.newCameraPosition(_kGooglePlex));
+  }
 
 
   Future<void> post_change_location(String type)
@@ -375,7 +411,7 @@ Navigator.pop(context);
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           minimumSize: const Size(110, 40),
-                          primary: Colors.blueAccent,
+                          backgroundColor: Colors.blueAccent,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(
                               50,
@@ -399,21 +435,17 @@ Navigator.pop(context);
                     ),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
-                      child: ElevatedButton(
+                      child:ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           minimumSize: const Size(110, 40),
-                          primary: Colors.blueAccent,
+                          backgroundColor: Colors.blueAccent, // Updated from 'primary' to 'backgroundColor'
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                              50,
-                            ),
+                            borderRadius: BorderRadius.circular(50),
                           ),
                         ),
                         onPressed: () {
-                          //write your onPressed function here
-
+                          // Your onPressed function here
                           change_location();
-
                         },
                         child: const Text(
                           'Save',
@@ -421,7 +453,8 @@ Navigator.pop(context);
                             fontSize: 15,
                           ),
                         ),
-                      ),
+                      )
+                      ,
                     ),
                   ],
                 ),

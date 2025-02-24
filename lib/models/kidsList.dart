@@ -46,6 +46,8 @@ class Students {
   String? schoolMobileNumber;
   String? schoolLat;
   String? schoolLng;
+  String? lat;
+  String? long;
   String? driverMobileNumber;
   String? driverMobileToken;
   String? driverName;
@@ -79,11 +81,14 @@ class Students {
   String? db;
   String?schoolImage;
   String?sessionId;
+  bool? new_chat;
   Students(
       {this.name,
         this.fname,
         this.id,
         this.userId,
+        this.lat,
+        this.long,
         this.avatar,
         this.schoolId,
         this.studentGrade,
@@ -126,11 +131,14 @@ class Students {
         this.pickupRequestDistance,
         this.studentStatus,
         this.features,
+        this.new_chat,
         this.mobileNumbers,this.db,this.schoolImage,this.sessionId});
 
   Students.fromJson(Map<String, dynamic> json) {
     name = json['name'];
      fname= json['fname'];
+    lat = json['lat'];
+    long= json['long'];
     id = json['id'];
     userId = json['user_id'];
     avatar = json['avatar'];
@@ -176,6 +184,7 @@ class Students {
     schoolImage= json['schoolImage'];
     sessionId = json['session_id'];
     db = json['db'];
+    new_chat=json['new_chat'];
     studentStatus = json['student_status'] != null
         ? new StudentStatus.fromJson(json['student_status'])
         : null;
@@ -198,6 +207,8 @@ class Students {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['name'] = name;
     data['fname'] = fname;
+    data['lat'] = lat;
+    data['long'] = long;
     data['id'] = id;
     data['user_id'] = userId;
     data['avatar'] = avatar;
@@ -243,6 +254,7 @@ class Students {
     data['pickup_request_distance'] = pickupRequestDistance;
     data['schoolImage']=schoolImage;
     data['session_id'] = sessionId;
+    data['new_chat']=new_chat;
 
     if (studentStatus != null) {
       data['student_status'] = studentStatus!.toJson();
@@ -290,8 +302,9 @@ class Features {
   String?mobile_number;
   String?school_name;
   String? icon_svg;
+  bool? new_add;
 
-  Features({this.name, this.nameAr, this.icon, this.url, this.arabicUrl,this.mobile_number,this.school_name,this.icon_svg});
+  Features({this.name, this.nameAr, this.icon, this.url, this.arabicUrl,this.mobile_number,this.school_name,this.icon_svg,this.new_add});
 
   Features.fromJson(Map<String, dynamic> json) {
 
@@ -301,6 +314,7 @@ class Features {
     url = json['url'];
     arabicUrl = json['arabic_url'];
     icon_svg = json['icon_svg'];
+    new_add = json['new_add'];
   //  icon_svg
   }
 
@@ -312,6 +326,7 @@ class Features {
     data['url'] = url;
     data['arabic_url'] = arabicUrl;
     data['icon_svg'] = icon;
+    data['new_add'] = new_add;
     return data;
   }
 }
@@ -337,3 +352,4 @@ class MobileNumbers {
     return data;
   }
 }
+

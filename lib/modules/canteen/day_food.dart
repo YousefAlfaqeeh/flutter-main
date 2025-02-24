@@ -352,10 +352,31 @@ class _Food_day_studentState extends State<Food_day_student> {
                                         child: Checkbox(
                                           checkColor: Colors.white,
                                           value: all_day,
-                                          onChanged: (bool? value) {
+                                          onChanged: (bool? value)async {
                                             setState(() {
                                               all_day = value!;
                                             });
+                                            if(all_day)
+                                              {
+
+                                                await DioHelper.postData(
+                                                    url: Post_canteen_all_day,
+                                                    data: {
+                                                      "student_id": AppCubit.std,
+                                                      "all_ch": all_ch,
+                                                      "day_id":widget.day_id
+
+                                                    },
+                                                    token: CacheHelper.getBoolean(key: 'authorization'))
+                                                    .then(
+                                                      (value) async {
+                                                        print(value.data);
+                                                  },
+                                                ).catchError((onError) {
+                                                  print("---------");
+                                                  print(onError);
+                                                });
+                                              }
                                           },
                                         ),
                                       ),

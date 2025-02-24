@@ -67,6 +67,8 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 child:  IconButton(
                 onPressed: () {
                   Reset.clear_searhe();
+                  AppCubit.filter=false;
+                  AppCubit.typeAbs='Daily';
                   if(AppCubit.back_home) {
                     AppCubit.back_home=false;
                     Navigator.push(
@@ -236,8 +238,40 @@ class CustomBottomBar extends StatefulWidget {
 }
 
 class _CustomBottomBarState extends State<CustomBottomBar> {
+  bool show=true;
+  @override
+  void initState() {
+    //     CacheHelper.saveData(
+    //                 key: 'full_system', value: login_info?.full_system);
+    //             CacheHelper.saveData(
+    //                 key: 'sms_system', value: login_info?.sms_system);
+    //             CacheHelper.saveData(
+    //                 key: 'tracking_system', value: login_info?.tracking_system);
+    // TODO: implement initState
+    try {
+      if (CacheHelper.getBoolean(key: 'full_system')) {
+        show = true;
+      }
+      else if (CacheHelper.getBoolean(key: 'tracking_system')) {
+        show = true;
+      }
+      else {
+        show = false;
+      }
+    }
+    catch(e)
+    {  show = true;
+
+    }
+
+    setState(() {
+
+    });
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
+
     // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
     return BottomAppBar(
       shape: CircularNotchedRectangle(),
@@ -274,32 +308,35 @@ class _CustomBottomBarState extends State<CustomBottomBar> {
                 )
               ],
             ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
+            Visibility(
+              visible: show,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
 
-                Padding(
-                  padding: const EdgeInsets.only(top: 15.0),
-                  child: MaterialButton(
-                    minWidth: 40,
-                    onPressed: () {
-                      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => Tracking(),
-                          ));
-                    },
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SvgPicture.asset(widget.imageTrack,color: widget.colorTrack,height: 22,)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 15.0),
+                    child: MaterialButton(
+                      minWidth: 40,
+                      onPressed: () {
+                        SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Tracking(),
+                            ));
+                      },
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SvgPicture.asset(widget.imageTrack,color: widget.colorTrack,height: 22,)
 
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                )
-              ],
+                  )
+                ],
+              ),
             ),
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -326,32 +363,36 @@ class _CustomBottomBarState extends State<CustomBottomBar> {
                 )
               ],
             ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
+            Visibility(
+              visible: show,
+              child: Row(
 
-                Padding(
-                  padding: const EdgeInsets.only(top: 15.0),
-                  child: MaterialButton(
-                    minWidth: 40,
-                    onPressed: () {
-                      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => PickUp_Request(),
-                          ));
-                    },
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SvgPicture.asset(widget.imagePick,color:  widget.colorPick,height: 22,)
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
 
-                      ],
+                  Padding(
+                    padding: const EdgeInsets.only(top: 15.0),
+                    child: MaterialButton(
+                      minWidth: 40,
+                      onPressed: () {
+                        SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PickUp_Request(),
+                            ));
+                      },
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SvgPicture.asset(widget.imagePick,color:  widget.colorPick,height: 22,)
+
+                        ],
+                      ),
                     ),
-                  ),
-                )
-              ],
+                  )
+                ],
+              ),
             ),
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,

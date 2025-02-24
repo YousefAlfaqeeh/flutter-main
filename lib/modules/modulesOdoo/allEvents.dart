@@ -1,10 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:udemy_flutter/models/method.dart';
 import 'package:udemy_flutter/models/modelAllEvents.dart';
 import 'package:udemy_flutter/modules/cubit/cubit.dart';
 import 'package:udemy_flutter/modules/cubit/states.dart';
+import 'package:udemy_flutter/modules/home/new_home.dart';
 import 'package:udemy_flutter/modules/modulesOdoo/formEvent.dart';
 import 'package:udemy_flutter/modules/studet_details/detail.dart';
 import 'package:udemy_flutter/modules/studet_details/new_detail.dart';
@@ -64,123 +67,143 @@ class _AllEventsState extends State<AllEvents> {
   Widget build(BuildContext context) {
     return BlocProvider(create: (context) => AppCubit()..getAllEvents(widget.std_id),
       child: BlocConsumer<AppCubit,AppStates>(builder: (context, state) {
-        return Scaffold(
-          body:Container(
-            color: Color(0xfff6f8fb),
-            child: Column(
-              children: [
-                Container(
-                  width: double.infinity,
-                  color: Colors.blue[700],
-                  child:
-                  Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(top: 50,left: 20),
+        return WillPopScope(
+          onWillPop: ()async {
+            Reset.clear_searhe();
+            if(AppCubit.back_home) {
+              AppCubit.back_home=false;
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Hiome_Kids()),
+              );
+            }
+            else {
+              SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => New_Detail()),
+              );
+            }
+            return false;
+          },
+          child: Scaffold(
+            body:Container(
+              color: Color(0xfff6f8fb),
+              child: Column(
+                children: [
+                  Container(
+                    width: double.infinity,
+                    color: Colors.blue[700],
+                    child:
+                    Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(top: 50,left: 20),
 
-                        child: Row(children: [
-                          IconButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                              // Navigator.push(
-                              //   context,
-                              //   MaterialPageRoute(builder: (context) => New_Detail()),
-                              // );
-                            },
-                            icon: Container(
-                                width: 13.58,
-                                height: 22.37,
-                                padding: EdgeInsetsDirectional.only(end: 2),
-                                child: SvgPicture.asset("images/chevron_left_solid.svg")),
-                          ),
-                          Container(padding: EdgeInsets.all(3),child: SvgPicture.asset("images/calendar_day_solid.svg"),),
-                          Container(
-                              padding: EdgeInsets.symmetric(horizontal: 20),
-                              alignment: Alignment.centerLeft, child: Text("Events",style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Nunito',fontSize: 25,color: Colors.white),)),
-                        ],),
-                      ),
+                          child: Row(children: [
+                            IconButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                                // Navigator.push(
+                                //   context,
+                                //   MaterialPageRoute(builder: (context) => New_Detail()),
+                                // );
+                              },
+                              icon: Container(
+                                  width: 13.58,
+                                  height: 22.37,
+                                  padding: EdgeInsetsDirectional.only(end: 2),
+                                  child: SvgPicture.asset("images/chevron_left_solid.svg")),
+                            ),
+                            Container(padding: EdgeInsets.all(3),child: SvgPicture.asset("images/calendar_day_solid.svg"),),
+                            Container(
+                                padding: EdgeInsets.symmetric(horizontal: 20),
+                                alignment: Alignment.centerLeft, child: Text("Events",style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Nunito',fontSize: 25,color: Colors.white),)),
+                          ],),
+                        ),
 
-                      Container(
-                          padding: EdgeInsets.only(top: 20,bottom: 20),
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 30),
-                          child: Row(
-                            children: [
+                        Container(
+                            padding: EdgeInsets.only(top: 20,bottom: 20),
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 30),
+                            child: Row(
+                              children: [
 
-                              Expanded(
-                                child: SizedBox(
-                                  width: 284,
-                                  child: TextFormField(
-                                    controller: search,
-                                    onChanged:  onSearchTextChanged,
-                                    decoration: InputDecoration(
+                                Expanded(
+                                  child: SizedBox(
+                                    width: 284,
+                                    child: TextFormField(
+                                      controller: search,
+                                      onChanged:  onSearchTextChanged,
+                                      decoration: InputDecoration(
 
-                                        filled: true,
-                                        fillColor: Colors.white,
-                                        prefixIcon: const Icon(Icons.search,size: 35),
+                                          filled: true,
+                                          fillColor: Colors.white,
+                                          prefixIcon: const Icon(Icons.search,size: 35),
 
-                                        enabledBorder: OutlineInputBorder(
-                                            borderSide: const BorderSide(
-                                                color: Colors.white),
-                                            borderRadius:
-                                            BorderRadius.circular(15)),
-                                        border: OutlineInputBorder(
-                                            borderSide: const BorderSide(
-                                                color: Colors.white),
-                                            borderRadius:
-                                            BorderRadius.circular(15))),
+                                          enabledBorder: OutlineInputBorder(
+                                              borderSide: const BorderSide(
+                                                  color: Colors.white),
+                                              borderRadius:
+                                              BorderRadius.circular(15)),
+                                          border: OutlineInputBorder(
+                                              borderSide: const BorderSide(
+                                                  color: Colors.white),
+                                              borderRadius:
+                                              BorderRadius.circular(15))),
 
 
+                                    ),
                                   ),
                                 ),
-                              ),
-                              SizedBox(width: 10,),
-                              Container(
-                                  height: 57,
-                                  width: 57,
-                                  decoration: BoxDecoration(
+                                SizedBox(width: 10,),
+                                Container(
+                                    height: 57,
+                                    width: 57,
+                                    decoration: BoxDecoration(
 
-                                      gradient: LinearGradient(begin: Alignment.topRight,end: Alignment.topLeft,colors: [
-                                        Colors.white,
-                                        Colors.white
+                                        gradient: LinearGradient(begin: Alignment.topRight,end: Alignment.topLeft,colors: [
+                                          Colors.white,
+                                          Colors.white
 
-                                      ]),
+                                        ]),
 
 
-                                      borderRadius: BorderRadius.circular(10)),
-                                  child: InkWell(onTap: () {
+                                        borderRadius: BorderRadius.circular(10)),
+                                    child: InkWell(onTap: () {
 
-                                  },child:
-                                  Container(
+                                    },child:
+                                    Container(
 
-                                      padding: EdgeInsets.all(15),
-                                      child: SvgPicture.asset("images/filter_solid.svg")) ,))
-                            ],
-                          )),
+                                        padding: EdgeInsets.all(15),
+                                        child: SvgPicture.asset("images/filter_solid.svg")) ,))
+                              ],
+                            )),
 
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                // ),
-                AppCubit.list_allEvents.length!=0 && !flg
-                    ? Expanded(
-                  child:list_Ass_Search.length!=0 ? ListView.builder(
+                  // ),
+                  AppCubit.list_allEvents.length!=0 && !flg
+                      ? Expanded(
+                    child:list_Ass_Search.length!=0 ? ListView.builder(
 
-                    itemBuilder: (context, index) => allWeekly(list_Ass_Search[index]),
-                    itemCount: list_Ass_Search.length,
-                    shrinkWrap: true,
+                      itemBuilder: (context, index) => index<list_Ass_Search.length?allWeekly(list_Ass_Search[index]):SizedBox(height: 100,),
+                      itemCount: list_Ass_Search.length+1,
+                      shrinkWrap: true,
 
-                  ):
-                  ListView.builder(
+                    ):
+                    ListView.builder(
 
-                    itemBuilder: (context, index) => allWeekly(AppCubit.list_allEvents[index]),
-                    itemCount: AppCubit.list_allEvents.length,
-                    shrinkWrap: true,
+                      itemBuilder: (context, index) => index< AppCubit.list_allEvents.length?allWeekly(AppCubit.list_allEvents[index]):SizedBox(height: 100,),
+                      itemCount: AppCubit.list_allEvents.length+1,
+                      shrinkWrap: true,
 
-                  ),
-                ):Expanded(child: emptyAss()),
+                    ),
+                  ):Expanded(child: emptyAss()),
 
-              ],
+                ],
+              ),
             ),
           ),
         );
